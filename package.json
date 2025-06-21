@@ -1,7 +1,7 @@
 {
   "name": "sheikah-plate",
   "version": "1.0.0",
-  "description": "Legend of Zelda Recipe Book Software",
+  "description": "Sheikah Plate - Your Legend of Zelda Themed Recipe Book ",
   "scripts": {
     "dev": "vite",
     "build": "vite build",

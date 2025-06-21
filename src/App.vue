@@ -31,11 +31,11 @@ export default {
   },
   setup() {
     const recipes = ref([
-      new Recipe('Mushroom Skewer'),
-      new Recipe('Seafood Skewer'),
-      new Recipe('Meat Skewer'),
-      new Recipe('Fruitcake'),
-      new Recipe('Honey Candy')
+      new Recipe('Mushroom Skewer', '/assets/recipe-assets/Mushroom_Skewer.png'),
+      new Recipe('Seafood Skewer', '/assets/recipe-assets/Seafood_Skewer.png'),
+      new Recipe('Meat Skewer', '/assets/recipe-assets/Meat_Skewer.png'),
+      new Recipe('Fruitcake', '/assets/recipe-assets/Fruitcake.png'),
+      new Recipe('Honey Candy', '/assets/recipe-assets/Honey_Candy.png')
     ])
     
     const activeIndex = ref(2) // Start with middle card

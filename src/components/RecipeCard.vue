@@ -10,15 +10,25 @@
         :alt="recipe.name"
         class="w-full h-auto"
       />
-      <!-- Recipe Title Overlay -->
-      <div class="absolute inset-x-0 top-0 pt-8 flex items-start justify-center pointer-events-none">
-        <div class="max-w-[80%] text-center">
+      <!-- Content Container -->
+      <div class="absolute inset-0 flex flex-col items-center pointer-events-none">
+        <!-- Title -->
+        <div class="pt-8 text-center max-w-[80%]">
           <h3 
             class="font-bold text-2xl" 
             style="font-family: Arial, sans-serif; color: #453906;"
           >
             {{ recipe.name }}
           </h3>
+        </div>
+        
+        <!-- Recipe Picture -->
+        <div v-if="recipe.picture" class="mt-6 flex items-center justify-center w-full px-8">
+          <img 
+            :src="recipe.picture" 
+            :alt="`Image of ${recipe.name}`" 
+            class="max-w-full max-h-[140px] object-contain drop-shadow-lg"
+          />
         </div>
       </div>
     </div>
