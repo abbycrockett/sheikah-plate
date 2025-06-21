@@ -30,6 +30,36 @@
             class="max-w-full max-h-[140px] object-contain drop-shadow-lg"
           />
         </div>
+        
+        <!-- Description -->
+        <div v-if="recipe.description" class="mt-4 text-left max-w-[85%] px-">
+          <p 
+            class="text-sm leading-tight transform transition-all duration-700 ease-out"
+            style="font-family: Arial, sans-serif; color: #655A36;"
+            :class="isActive ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-80'"
+          >
+            {{ recipe.description }}
+          </p>
+        </div>
+
+        <!-- Hearts Container -->
+        <div
+          class="absolute w-full px-12 pb-5 transition-all duration-500 ease-out"
+          :class="isActive ? 'bottom-6' : 'bottom-4'"
+        >
+          <div class="h-px bg-[#847e67] w-full mb-2"></div>
+          <div class="flex justify-center items-center space-x-1">
+            <img
+              v-for="n in 5"
+              :key="n"
+              :src="getHeartSrc(n)"
+              alt="heart"
+              class="transition-all duration-500 ease-out"
+              :class="isActive ? 'w-6 h-6' : 'w-4 h-4'"
+            />
+          </div>
+          <div class="h-px bg-[#847e67] w-full mt-2"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -65,6 +95,18 @@ export default {
         const opacity = Math.max(0.2, 1 - distance * 0.4)
         return `${baseClasses} scale-${Math.round(scale * 100)} opacity-${Math.round(opacity * 100)} z-0`
       }
+    }
+  },
+  methods: {
+    getHeartSrc(n) {
+      const hearts = this.recipe.hearts;
+      if (hearts >= n) {
+        return '/assets/ui-assets/full-heart.png';
+      }
+      if (hearts >= n - 0.5) {
+        return '/assets/ui-assets/half-heart.png';
+      }
+      return '/assets/ui-assets/empty-heart.png';
     }
   }
 }

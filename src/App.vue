@@ -31,11 +31,36 @@ export default {
   },
   setup() {
     const recipes = ref([
-      new Recipe('Mushroom Skewer', '/assets/recipe-assets/Mushroom_Skewer.png'),
-      new Recipe('Seafood Skewer', '/assets/recipe-assets/Seafood_Skewer.png'),
-      new Recipe('Meat Skewer', '/assets/recipe-assets/Meat_Skewer.png'),
-      new Recipe('Fruitcake', '/assets/recipe-assets/Fruitcake.png'),
-      new Recipe('Honey Candy', '/assets/recipe-assets/Honey_Candy.png')
+      new Recipe(
+        'Mushroom Skewer', 
+        '/assets/recipe-assets/Mushroom_Skewer.png',
+        'A simple dish made by cooking mushrooms on a stick. The mushrooms are grilled to perfection, bringing out their natural umami flavor.',
+        1
+      ),
+      new Recipe(
+        'Seafood Skewer', 
+        '/assets/recipe-assets/Seafood_Skewer.png',
+        'Fresh seafood grilled on a skewer. The combination of different sea creatures creates a rich, oceanic taste that\'s both savory and satisfying.',
+        3.5
+      ),
+      new Recipe(
+        'Meat Skewer', 
+        '/assets/recipe-assets/Meat_Skewer.png',
+        'Juicy meat grilled to perfection on a stick. The high heat seals in the natural juices, creating a tender and flavorful dish that\'s perfect for restoring stamina.',
+        2
+      ),
+      new Recipe(
+        'Fruitcake', 
+        '/assets/recipe-assets/Fruitcake.png',
+        'A sweet and moist cake filled with fresh fruits. The natural sweetness of the fruits combined with the soft cake texture makes this a delightful treat that can restore hearts.',
+        4
+      ),
+      new Recipe(
+        'Honey Candy', 
+        '/assets/recipe-assets/Honey_Candy.png',
+        'A sweet confection made from pure honey. This golden treat is not only delicious but also has healing properties, making it a favorite among travelers and adventurers alike.',
+        5
+      )
     ])
     
     const activeIndex = ref(2) // Start with middle card
