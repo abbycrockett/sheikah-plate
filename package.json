@@ -1,0 +1,20 @@
+{
+  "name": "sheikah-plate",
+  "version": "1.0.0",
+  "description": "Legend of Zelda Recipe Book Software",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "vue": "^3.3.4"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "tailwindcss": "^3.3.2",
+    "vite": "^4.4.5"
+  }
+} 
