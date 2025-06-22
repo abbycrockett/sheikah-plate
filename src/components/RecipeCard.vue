@@ -4,16 +4,19 @@
     :class="cardClasses"
     @click="$emit('click')"
   >
-    <div class="relative">
+    <div class="relative h-full">
       <img 
         src="/assets/ui-assets/single-recipe-box.svg" 
         :alt="recipe.name"
-        class="w-full h-auto"
+        class="w-full h-full object-fill"
       />
       <!-- Content Container -->
       <div class="absolute inset-0 flex flex-col items-center pointer-events-none">
         <!-- Title -->
-        <div class="pt-8 text-center max-w-[80%]">
+        <div 
+          class="text-center max-w-[80%] transition-all duration-500 ease-out"
+          :class="isActive ? 'pt-16' : 'pt-12'"
+        >
           <h3 
             class="font-bold text-2xl" 
             style="font-family: Arial, sans-serif; color: #453906;"
@@ -27,16 +30,17 @@
           <img 
             :src="recipe.picture" 
             :alt="`Image of ${recipe.name}`" 
-            class="max-w-full max-h-[140px] object-contain drop-shadow-lg"
+            class="max-w-full object-contain drop-shadow-lg transition-all duration-500 ease-out"
+            :class="isActive ? 'max-h-[140px]' : 'max-h-[112px]'"
           />
         </div>
         
         <!-- Description -->
         <div v-if="recipe.description" class="mt-4 text-left max-w-[85%] px-">
           <p 
-            class="text-sm leading-tight transform transition-all duration-700 ease-out"
+            class="leading-tight transform transition-all duration-700 ease-out"
             style="font-family: Arial, sans-serif; color: #655A36;"
-            :class="isActive ? 'translate-y-0 opacity-100' : 'translate-y-1 opacity-80'"
+            :class="isActive ? 'text-sm translate-y-0 opacity-100' : 'text-xs translate-y-1 opacity-80'"
           >
             {{ recipe.description }}
           </p>
@@ -45,9 +49,9 @@
         <!-- Hearts Container -->
         <div
           class="absolute w-full px-12 pb-5 transition-all duration-500 ease-out"
-          :class="isActive ? 'bottom-6' : 'bottom-4'"
+          :class="isActive ? 'bottom-14' : 'bottom-10'"
         >
-          <div class="h-px bg-[#847e67] w-full mb-2"></div>
+          <div class="h-px bg-transparent w-full mb-2"></div>
           <div class="flex justify-center items-center space-x-1">
             <img
               v-for="n in 5"
@@ -58,7 +62,7 @@
               :class="isActive ? 'w-6 h-6' : 'w-4 h-4'"
             />
           </div>
-          <div class="h-px bg-[#847e67] w-full mt-2"></div>
+          <div class="h-px bg-transparent w-full mt-2"></div>
         </div>
       </div>
     </div>
@@ -114,13 +118,15 @@ export default {
 
 <style scoped>
 .recipe-card {
-  min-width: 324px;
-  max-width: 324px;
+  min-width: 260px;
+  max-width: 260px;
+  height: 420px;
 }
 
 /* Make active card larger */
 .recipe-card.scale-125 {
-  min-width: 405px; /* 324 * 1.25 */
-  max-width: 405px;
+  min-width: 325px; /* 260 * 1.25 */
+  max-width: 325px;
+  height: 525px; /* 420 * 1.25 */
 }
 </style> 
