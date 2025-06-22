@@ -31,16 +31,18 @@
             :src="recipe.picture" 
             :alt="`Image of ${recipe.name}`" 
             class="max-w-full object-contain drop-shadow-lg transition-all duration-500 ease-out"
-            :class="isActive ? 'max-h-[140px]' : 'max-h-[112px]'"
+            :class="isActive ? 'max-h-[140px]' : 'max-h-[100px]'"
           />
         </div>
         
         <!-- Description -->
-        <div v-if="recipe.description" class="mt-4 text-left max-w-[85%] px-">
+        <div v-if="recipe.description" class="mt-4 text-left max-w-[85%] px-4">
           <p 
-            class="leading-tight transform transition-all duration-700 ease-out"
+            class="text-sm leading-tight transform transition-all duration-500 ease-out"
             style="font-family: Arial, sans-serif; color: #655A36;"
-            :class="isActive ? 'text-sm translate-y-0 opacity-100' : 'text-xs translate-y-1 opacity-80'"
+            :class="isActive 
+              ? 'scale-100 opacity-100 translate-y-0' 
+              : 'scale-75 opacity-75 -translate-y-5'"
           >
             {{ recipe.description }}
           </p>
