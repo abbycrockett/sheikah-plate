@@ -1,7 +1,18 @@
 <template>
   <div id="app" class="w-full h-screen">
-    <ViewHome v-if="currentView === 'home'" @show-recipes="currentView = 'recipes'" />
-    <ViewRecipes v-else-if="currentView === 'recipes'" @back-to-home="currentView = 'home'" />
+    <ViewHome 
+      v-if="currentView === 'home'" 
+      @show-recipes="currentView = 'recipes'" 
+      @show-add-recipe="currentView = 'add-recipe'" 
+    />
+    <ViewRecipes 
+      v-else-if="currentView === 'recipes'" 
+      @back-to-home="currentView = 'home'" 
+    />
+    <RecipeMaintenance 
+      v-else-if="currentView === 'add-recipe'" 
+      @back-to-home="currentView = 'home'" 
+    />
   </div>
 </template>
 
@@ -9,14 +20,14 @@
 import { ref, watch } from 'vue';
 import ViewHome from './views/ViewHome.vue';
 import ViewRecipes from './views/ViewRecipes.vue';
-
-console.log('App.vue loaded');
+import RecipeMaintenance from './views/RecipeMaintenance.vue';
 
 export default {
   name: 'App',
   components: {
     ViewHome,
-    ViewRecipes
+    ViewRecipes,
+    RecipeMaintenance
   },
   setup() {
     const currentView = ref('home');
