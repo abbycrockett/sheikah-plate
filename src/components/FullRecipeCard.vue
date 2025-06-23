@@ -1,0 +1,142 @@
+<template>
+  <transition name="fade-bg">
+    <div v-if="visible" class="fixed inset-0 z-50 flex items-center justify-center">
+      <transition name="fade">
+        <div v-if="visible" class="absolute inset-0 bg-black bg-opacity-60"></div>
+      </transition>
+      <transition name="pop-fade">
+        <div 
+          v-if="cardVisible" 
+          class="relative flex items-center justify-center pop-card z-10"
+        >
+          <img 
+            src="/assets/ui-assets/full-recipe-box.svg" 
+            alt="Full Recipe Box" 
+            class="max-w-full max-h-[89.9vh]"
+          />
+          <!-- Recipe content will go here in the future -->
+        </div>
+      </transition>
+    </div>
+  </transition>
+</template>
+
+<script>
+export default {
+  name: 'FullRecipeCard',
+  props: {
+    recipe: {
+      type: Object,
+      required: true
+    },
+    closing: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      visible: false,
+      cardVisible: false,
+      closeTimeout: null
+    }
+  },
+  mounted() {
+    // Fade in background, then pop in card
+    requestAnimationFrame(() => {
+      this.visible = true
+      setTimeout(() => {
+        this.cardVisible = true
+      }, 120) // Delay for bg fade
+    })
+  },
+  watch: {
+    closing(val) {
+      if (val) {
+        // Start pop-out animation
+        this.cardVisible = false
+      }
+    },
+    cardVisible(val) {
+      if (!val && this.closing) {
+        // After pop-out animation finishes, emit close
+        clearTimeout(this.closeTimeout)
+        this.closeTimeout = setTimeout(() => {
+          this.$emit('close')
+        }, 120) // Wait for pop-out animation (0.12s)
+      }
+    }
+  },
+  beforeUnmount() {
+    clearTimeout(this.closeTimeout)
+  }
+}
+</script>
+
+<style scoped>
+.fade-bg-enter-active, .fade-bg-leave-active {
+  transition: opacity 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-bg-enter-from, .fade-bg-leave-to {
+  opacity: 0;
+}
+.fade-bg-enter-to, .fade-bg-leave-from {
+  opacity: 1;
+}
+
+.fade-enter-active {
+  transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-leave-active {
+  transition: opacity 0s;
+}
+.fade-enter-from, .fade-leave-to {
+  opacity: 0;
+}
+
+.pop-fade-enter-active {
+  animation: pop-in-smooth 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.pop-fade-leave-active {
+  animation: bubble-burst 0.4s ease-in forwards;
+}
+.pop-fade-enter-from, .pop-fade-leave-to {
+  opacity: 0;
+  transform: scale(0.7) translateY(40px);
+}
+.pop-fade-enter-to, .pop-fade-leave-from {
+  opacity: 1;
+  transform: scale(1) translateY(0);
+}
+
+@keyframes pop-in-smooth {
+  0% {
+    opacity: 0;
+    transform: scale(0.7) translateY(40px);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.06) translateY(-6px);
+  }
+  80% {
+    transform: scale(0.98) translateY(1.5px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes bubble-burst {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.4);
+  }
+}
+
+.pop-card {
+  transition: box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+</style> 

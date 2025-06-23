@@ -57,18 +57,22 @@
         </div>
       </transition>
     </div>
+
+    <FullRecipeCard v-if="showFullRecipe" :recipe="recipes[activeIndex]" :closing="fullRecipeClosing" @close="handleFullRecipeClose" />
   </div>
 </template>
 
 <script>
 import { ref, onMounted, onUnmounted } from 'vue'
 import RecipeCard from '../components/RecipeCard.vue'
+import FullRecipeCard from '../components/FullRecipeCard.vue'
 import { Recipe } from '../models/Recipe.js'
 
 export default {
   name: 'ViewRecipes',
   components: {
-    RecipeCard
+    RecipeCard,
+    FullRecipeCard
   },
   emits: ['back-to-home'],
   setup() {
@@ -76,6 +80,8 @@ export default {
     const activeIndex = ref(0) // Start with the first recipe
     const translateX = ref(0)
     const showTooltip = ref(false)
+    const showFullRecipe = ref(false)
+    const fullRecipeClosing = ref(false)
     
     recipes.value = [
       new Recipe(
@@ -119,7 +125,17 @@ export default {
       translateX.value = -offset
     }
     
+    function handleFullRecipeClose() {
+      showFullRecipe.value = false;
+      fullRecipeClosing.value = false;
+    }
+    
     const handleKeydown = (event) => {
+      if (showFullRecipe.value && !fullRecipeClosing.value) {
+        // Trigger closing animation
+        fullRecipeClosing.value = true
+        return
+      }
       if (event.key === 'ArrowLeft') {
         if (activeIndex.value > 0) {
           setActiveCard(activeIndex.value - 1)
@@ -128,6 +144,9 @@ export default {
         if (activeIndex.value < recipes.value.length - 1) {
           setActiveCard(activeIndex.value + 1)
         }
+      } else if (event.key === 'y' || event.key === 'Y') {
+        // Open the full recipe modal
+        showFullRecipe.value = true
       }
     }
     
@@ -146,7 +165,10 @@ export default {
       activeIndex,
       translateX,
       setActiveCard,
-      showTooltip
+      showTooltip,
+      showFullRecipe,
+      fullRecipeClosing,
+      handleFullRecipeClose
     }
   }
 }
