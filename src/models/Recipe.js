@@ -1,11 +1,12 @@
 export class Recipe {
-  constructor(name = '', picture = null, description = '', hearts = 0, directions = '') {
+  constructor(name = '', picture = null, description = '', hearts = 0, directions = '', ingredients = []) {
     this.id = this.generateId()
     this.name = name
     this.picture = picture
     this.description = description
     this.hearts = hearts
     this.directions = directions
+    this.ingredients = ingredients
     this.createdAt = new Date()
     this.updatedAt = new Date()
   }
@@ -77,6 +78,12 @@ export class Recipe {
     return true
   }
 
+  updateIngredients(newIngredients) {
+    this.ingredients = newIngredients || []
+    this.updatedAt = new Date()
+    return true
+  }
+
   updateHearts(newHearts) {
     const numHearts = Number(newHearts);
     if (!isNaN(numHearts) && numHearts >= 0 && numHearts <= 5) {
@@ -95,13 +102,14 @@ export class Recipe {
       description: this.description,
       hearts: this.hearts,
       directions: this.directions,
+      ingredients: this.ingredients,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }
   }
 
   static fromJSON(data) {
-    const recipe = new Recipe(data.name, data.picture, data.description || '', data.hearts || 0, data.directions || '')
+    const recipe = new Recipe(data.name, data.picture, data.description || '', data.hearts || 0, data.directions || '', data.ingredients || [])
     recipe.id = data.id
     recipe.createdAt = new Date(data.createdAt)
     recipe.updatedAt = new Date(data.updatedAt)

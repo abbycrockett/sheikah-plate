@@ -40,6 +40,19 @@
                 </p>
               </div>
             </div>
+
+            <!-- Ingredients -->
+            <div v-if="recipe.ingredients && recipe.ingredients.length" class="absolute left-1/2 top-16 -ml-8">
+              <h3 class="text-3xl font-bold mb-4" style="color: #453906;">Ingredients</h3>
+              <ul>
+                <li v-for="(ingredient, idx) in recipe.ingredients" :key="ingredient"
+                    :class="[ 'text-lg cursor-pointer select-none', { 'line-through text-gray-400': crossed[idx] } ]"
+                    style="color: #453906;"
+                    @click="toggleCross(idx)">
+                  {{ ingredient }}
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
       </transition>
@@ -48,6 +61,7 @@
 </template>
 
 <script>
+import { ref, watch, onBeforeUnmount } from 'vue';
 export default {
   name: 'FullRecipeCard',
   props: {
@@ -64,7 +78,8 @@ export default {
     return {
       visible: false,
       cardVisible: false,
-      closeTimeout: null
+      closeTimeout: null,
+      crossed: []
     }
   },
   mounted() {
@@ -77,20 +92,32 @@ export default {
     })
   },
   watch: {
+    recipe: {
+      immediate: true,
+      handler(newRecipe) {
+        // Reset crossed state when recipe changes
+        this.crossed = newRecipe && newRecipe.ingredients ? newRecipe.ingredients.map(() => false) : [];
+      }
+    },
     closing(val) {
       if (val) {
-        // Start pop-out animation
-        this.cardVisible = false
+        this.cardVisible = false;
+        // Reset crossed state on close
+        this.crossed = this.recipe && this.recipe.ingredients ? this.recipe.ingredients.map(() => false) : [];
       }
     },
     cardVisible(val) {
       if (!val && this.closing) {
-        // After pop-out animation finishes, emit close
         clearTimeout(this.closeTimeout)
         this.closeTimeout = setTimeout(() => {
           this.$emit('close')
-        }, 120) // Wait for pop-out animation (0.12s)
+        }, 120)
       }
+    }
+  },
+  methods: {
+    toggleCross(idx) {
+      this.crossed[idx] = !this.crossed[idx];
     }
   },
   beforeUnmount() {
@@ -164,5 +191,9 @@ export default {
 
 .pop-card {
   transition: box-shadow 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.line-through {
+  text-decoration: line-through;
 }
 </style> 
