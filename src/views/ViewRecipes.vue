@@ -1,5 +1,6 @@
 <template>
-  <div class="w-full h-screen flex flex-col items-center justify-center">
+  <div class="w-full h-screen flex flex-col items-center justify-center relative">
+    <!-- <div class="view-border-overlay"></div> -->
     
     <!-- Back Button (temp)-->
     <div class="absolute top-6 left-6 z-10">
@@ -72,7 +73,7 @@ export default {
   emits: ['back-to-home'],
   setup() {
     const recipes = ref([])
-    const activeIndex = ref(2) // Start with middle card
+    const activeIndex = ref(0) // Start with the first recipe
     const translateX = ref(0)
     const showTooltip = ref(false)
     
@@ -114,7 +115,7 @@ export default {
       // Calculate translation to center the active card
       const cardWidth = 260 // Base width of the SVG card
       const gap = 48 // Gap between cards (12 * 4px from gap-12)
-      const offset = (index - 2) * (cardWidth + gap) // 2 is the center index
+      const offset = (index - 2) * (cardWidth + gap) // 2 is the 'natural' center index for a 5-card layout
       translateX.value = -offset
     }
     
@@ -149,4 +150,20 @@ export default {
     }
   }
 }
-</script> 
+</script>
+
+<style scoped>
+/* Maybe later?
+.view-border-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; 
+  border: 3px solid #5fdeff;
+  box-shadow: 0 0 20px #5fdeff, inset 0 2 12px #103f4b;
+  z-index: 20; 
+}
+*/
+</style> 

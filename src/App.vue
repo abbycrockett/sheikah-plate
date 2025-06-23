@@ -1,5 +1,6 @@
 <template>
   <div id="app" class="w-full h-screen">
+    <GlobalOverlay />
     <ViewHome 
       v-if="currentView === 'home'" 
       @show-recipes="currentView = 'recipes'" 
@@ -18,6 +19,7 @@
 
 <script>
 import { ref, watch } from 'vue';
+import GlobalOverlay from './components/GlobalOverlay.vue';
 import ViewHome from './views/ViewHome.vue';
 import ViewRecipes from './views/ViewRecipes.vue';
 import RecipeMaintenance from './views/RecipeMaintenance.vue';
@@ -25,6 +27,7 @@ import RecipeMaintenance from './views/RecipeMaintenance.vue';
 export default {
   name: 'App',
   components: {
+    GlobalOverlay,
     ViewHome,
     ViewRecipes,
     RecipeMaintenance
