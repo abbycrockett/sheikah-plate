@@ -4,7 +4,7 @@
       <img src="/assets/ui-assets/recipes-large-bg.png" alt="Background" class="w-full h-full object-cover" draggable="false" />
     </div>
     <div class="absolute inset-0 w-full h-full z-10 overlay-blur"></div>
-    <MenuBar class="absolute top-0 left-0 w-full z-30" />
+    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'recipes'" />
     <div class="relative z-20 flex flex-col items-center w-full">
       <div class="relative flex justify-center items-center w-full mb-4" style="max-width: 700px; min-width: 320px;">
         <input type="text" placeholder="Search..." class="search-input-bar w-[80%] h-[44px] bg-white text-xl text-[#222] font-semibold px-6 pr-12 rounded-lg shadow focus:outline-none focus:ring-2 focus:ring-[#897C4F] transition" style="border:none;" />

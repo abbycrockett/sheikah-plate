@@ -22,7 +22,7 @@
         </div>
       </div>
     </div>
-    <MenuBar class="absolute top-0 left-0 w-full z-30" />
+    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'adventure-log'" />
     <div class="relative z-20 flex flex-col items-center w-full">
       <!-- Add adventure log content here -->
     </div>
@@ -90,7 +90,7 @@ export default {
 .sword-overlay {
   position: absolute;
   right: 0;
-  bottom: -70px; /* Move the sword down so part of it is hidden */
+  bottom: -70px; 
   width: 390px;
   max-width: 50vw;
   z-index: 15;
@@ -104,7 +104,7 @@ export default {
   bottom: 100px;
   width: 540px;
   max-width: 60vw;
-  height: auto; /* or set a fixed height if needed */
+  height: auto; 
   z-index: 16;
 }
 .al-content-overlay {
@@ -130,7 +130,7 @@ export default {
   font-style: italic;
   color: #fff;
   letter-spacing: 0.5px;
-  margin-bottom: 0.05em; /* less space below the title */
+  margin-bottom: 0.05em;
 }
 .al-underline {
   width: 100%;
@@ -152,7 +152,7 @@ export default {
   margin-top: 0;
 }
 .notification-icon {
-  height: 1.3em; /* Adjust as needed to match your design */
+  height: 1.3em; 
   width: auto;
   margin-right: 0.5em;
   display: inline-block;
@@ -160,14 +160,14 @@ export default {
 .requestor-name {
   color: #AAA79F;
   font-weight: 500;
-  font-size: 1.4vw; /* Smaller than the title, scales with viewport */
-  line-height: 1.0em; /* Match the icon height */
+  font-size: 1.4vw; 
+  line-height: 1.0em; 
   display: inline-block;
   font-style: italic;
 }
 .al-location {
   color: #E1C139;
-  font-weight: bold;
+  font-weight: 700;
   font-size: 1.4vw;
   font-style: italic;
   text-align: right;
