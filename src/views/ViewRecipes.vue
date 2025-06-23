@@ -1,6 +1,6 @@
 <template>
   <div class="w-full h-screen flex flex-col items-center justify-center relative">
-    <!-- <div class="view-border-overlay"></div> -->
+     <div class="view-border-overlay"></div>
     
     <!-- Back Button (temp)-->
     <div class="absolute top-6 left-6 z-10">
@@ -27,7 +27,7 @@
           :recipe="recipe"
           :isActive="index === activeIndex"
           :index="index"
-          @click="setActiveCard(index)"
+          @click="handleRecipeCardClick(index)"
         />
       </div>
     </div>
@@ -82,6 +82,8 @@ export default {
     const showTooltip = ref(false)
     const showFullRecipe = ref(false)
     const fullRecipeClosing = ref(false)
+    const canOpenModal = ref(true)
+    let canOpenModalTimeout = null
     
     recipes.value = [
       new Recipe(
@@ -146,17 +148,31 @@ export default {
         fullRecipeClosing.value = true
         return
       }
-      if (event.key === 'ArrowLeft') {
+      if (event.key === 'ArrowLeft' || event.key === 'a') {
         if (activeIndex.value > 0) {
           setActiveCard(activeIndex.value - 1)
         }
-      } else if (event.key === 'ArrowRight') {
+      } else if (event.key === 'ArrowRight' || event.key === 'd') {
         if (activeIndex.value < recipes.value.length - 1) {
           setActiveCard(activeIndex.value + 1)
         }
-      } else if (event.key === 'y' || event.key === 'Y') {
+      } else if (event.key === 'y' || event.key === 'Y' || event.key === 's') {
         // Open the full recipe modal
         showFullRecipe.value = true
+      }
+    }
+    
+    // New handler for RecipeCard click
+    function handleRecipeCardClick(index) {
+      if (index === activeIndex.value && canOpenModal.value) {
+        showFullRecipe.value = true;
+      } else {
+        setActiveCard(index);
+        canOpenModal.value = false;
+        if (canOpenModalTimeout) clearTimeout(canOpenModalTimeout);
+        canOpenModalTimeout = setTimeout(() => {
+          canOpenModal.value = true;
+        }, 200);
       }
     }
     
@@ -168,6 +184,7 @@ export default {
     
     onUnmounted(() => {
       window.removeEventListener('keydown', handleKeydown)
+      if (canOpenModalTimeout) clearTimeout(canOpenModalTimeout);
     })
     
     return {
@@ -178,14 +195,14 @@ export default {
       showTooltip,
       showFullRecipe,
       fullRecipeClosing,
-      handleFullRecipeClose
+      handleFullRecipeClose,
+      handleRecipeCardClick
     }
   }
 }
 </script>
 
 <style scoped>
-/* Maybe later?
 .view-border-overlay {
   position: absolute;
   top: 0;
@@ -193,9 +210,29 @@ export default {
   width: 100%;
   height: 100%;
   pointer-events: none; 
-  border: 3px solid #5fdeff;
-  box-shadow: 0 0 20px #5fdeff, inset 0 2 12px #103f4b;
+  border: 3px solid rgba(95, 222, 255, 0.5);
+  box-shadow: 0 0 20px rgba(95, 222, 255, 0.5), inset 0 0 12px #103f4b;
   z-index: 20; 
+  border-radius: 18px;
+  animation: border-glow 2.5s ease-in-out infinite;
 }
-*/
+
+@keyframes border-glow {
+  0% {
+    border-color: rgba(95, 222, 255, 0.4);
+    box-shadow: 0 0 24px 6px rgba(95, 222, 255, 0.8), inset 0 0 18px #103f4b;
+  }
+  40% {
+    border-color: #1a284f;
+    box-shadow: 0 0 12px 2px #1a284f, inset 0 0 24px #255b9e;
+  }
+  60% {
+    border-color: #1a284f;
+    box-shadow: 0 0 12px 2px #1a284f, inset 0 0 24px #255b9e;
+  }
+  100% {
+    border-color: rgba(95, 222, 255, 0.5);
+    box-shadow: 0 0 24px 6px rgba(95, 222, 255, 0.5), inset 0 0 18px #103f4b;
+  }
+}
 </style> 

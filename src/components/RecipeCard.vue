@@ -19,7 +19,7 @@
         >
           <h3 
             class="font-bold text-2xl" 
-            style="font-family: Arial, sans-serif; color: #453906;"
+            style="font-family: var(--main-font); color: #453906;"
           >
             {{ recipe.name }}
           </h3>
@@ -39,7 +39,7 @@
         <div v-if="recipe.description" class="mt-4 text-left max-w-[85%] px-4">
           <p 
             class="text-sm leading-tight transform transition-all duration-500 ease-out"
-            style="font-family: Arial, sans-serif; color: #655A36;"
+            style="font-family: var(--main-font); color: #655A36;"
             :class="isActive 
               ? 'scale-100 opacity-100 translate-y-0' 
               : 'scale-75 opacity-75 -translate-y-5'"

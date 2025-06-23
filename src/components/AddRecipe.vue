@@ -98,7 +98,7 @@ export default {
   border: 2px solid #5fdeff;
   box-shadow: 0 0 20px #5fdeff, inset 0 0 10px #5fdeff;
   color: #e0f7ff;
-  font-family: 'Arial', sans-serif;
+  font-family: var(--main-font);
   display: flex;
   flex-direction: column;
   overflow-y: auto; /* Allow scrolling */

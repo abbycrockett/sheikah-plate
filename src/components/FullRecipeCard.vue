@@ -29,8 +29,8 @@
               </div>
               
               <!-- Recipe Nameplate -->
-              <div class="relative mt-4 flex items-center justify-center px-6 py-2 bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-700 rounded-md shadow-md transform -translate-x-14">
-                  <span class="text-white text-2xl font-bold tracking-wider">{{ recipe.name }}</span>
+              <div class="relative mt-4 flex items-center justify-center px-6 py-2 bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-700 rounded-md shadow-md transform -translate-x-14 w-70">
+                  <span class="text-white text-2xl font-bold tracking-wider" style="font-family: var(--main-font);">{{ recipe.name }}</span>
               </div>
 
               <!-- Directions -->
