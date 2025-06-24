@@ -67,6 +67,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import RecipeCard from '../components/RecipeCard.vue'
 import FullRecipeCard from '../components/FullRecipeCard.vue'
 import { Recipe } from '../models/Recipe.js'
+import { loadRecipes } from '../scripts/recipesStorage.js'
 
 export default {
   name: 'ViewRecipes',
@@ -85,48 +86,15 @@ export default {
     const canOpenModal = ref(true)
     let canOpenModalTimeout = null
     
-    recipes.value = [
-      new Recipe(
-        'Mushroom Skewer', 
-        '/assets/recipe-assets/Mushroom_Skewer.png',
-        'A simple dish made by cooking mushrooms on a stick. The mushrooms are grilled to perfection, bringing out their natural umami flavor.',
-        1,
-        'Clean mushrooms thoroughly. Carefully thread them onto a skewer. Grill over an open flame until tender and slightly browned.',
-        ['1x Hylian Shroom', '1x Skewer Stick']
-      ),
-      new Recipe(
-        'Seafood Skewer', 
-        '/assets/recipe-assets/Seafood_Skewer.png',
-        'Fresh seafood grilled on a skewer. The combination of different sea creatures creates a rich, oceanic taste that\'s both savory and satisfying.',
-        3.5,
-        'Marinate assorted seafood in herbs and oil. Skewer alternately. Grill on high heat for 2-3 minutes per side until cooked through.',
-        ['1x Mighty Porgy', '1x Hyrule Bass']
-      ),
-      new Recipe(
-        'Meat Skewer', 
-        '/assets/recipe-assets/Meat_Skewer.png',
-        'Juicy meat grilled to perfection on a stick. The high heat seals in the natural juices, creating a tender and flavorful dish that\'s perfect for restoring stamina.',
-        2,
-        'Cut quality meat into bite-sized cubes. Season generously with salt and spices. Skewer and grill over a hot fire, turning occasionally.',
-        ['1x Raw Meat', '1x Goron Spice']
-      ),
-      new Recipe(
-        'Fruitcake', 
-        '/assets/recipe-assets/Fruitcake.png',
-        'A sweet and moist cake filled with fresh fruits. The natural sweetness of the fruits combined with the soft cake texture.',
-        4,
-        'Combine flour, sugar, and eggs in a bowl. Fold in a mix of fresh, wild berries. Bake at 375°F for 25 minutes until golden.',
-        ['1x Wildberry', '1x Apple', '1x Cane Sugar', '1x Goat Butter']
-      ),
-      new Recipe(
-        'Honey Candy', 
-        '/assets/recipe-assets/Honey_Candy.png',
-        'A sweet confection made from pure honey. This golden treat is not only delicious but also has healing properties.',
-        5,
-        'Gently heat Courser Bee Honey in a pot until it begins to thicken. Pour onto a greased surface and let it cool completely. Break into pieces.',
-        ['1x Courser Bee Honey']
-      )
-    ]
+    function refreshRecipes() {
+      recipes.value = loadRecipes()
+    }
+    refreshRecipes()
+    
+    // Listen for recipe-added event
+    if (typeof window !== 'undefined') {
+      window.addEventListener('recipe-added', refreshRecipes)
+    }
     
     const setActiveCard = (index) => {
       activeIndex.value = index
@@ -185,6 +153,9 @@ export default {
     onUnmounted(() => {
       window.removeEventListener('keydown', handleKeydown)
       if (canOpenModalTimeout) clearTimeout(canOpenModalTimeout);
+      if (typeof window !== 'undefined') {
+        window.removeEventListener('recipe-added', refreshRecipes);
+      }
     })
     
     return {
