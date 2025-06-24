@@ -45,6 +45,11 @@ export default {
     });
 
     function handleKeydown(e) {
+      // Don't handle navigation if user is typing in an input field
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.contentEditable === 'true') {
+        return;
+      }
+      
       if (currentView.value === 'home' && (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'l')) {
         currentView.value = 'adventure-log';
       } else if (currentView.value === 'adventure-log' && (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'r')) {

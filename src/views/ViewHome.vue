@@ -6,7 +6,7 @@
     </div>
     <div class="absolute inset-0 w-full h-full z-10 overlay-blur"></div>
     
-    <div class="absolute top-2 right-56 z-40 flex gap-4">
+    <div class="absolute top-2 right-2 z-40 flex gap-4">
       <button 
         @click="$emit('show-recipes')" 
         class="action-btn-compact bg-[#058696] hover:bg-[#047a8a] text-white"
@@ -27,78 +27,73 @@
       </button>
     </div>
     
-    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'recipes'" />
+    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'recipes'" :showRupees="false" />
     
     <div class="relative z-20 flex flex-col items-center w-full h-full pt-24 pb-8 px-6">
-      <!-- Compact Top Bar -->
-      <div class="w-full max-w-6xl mb-4">
-        <div class="flex flex-col sm:flex-row gap-3 items-center justify-between">
-          <!-- Search Bar -->
-          <div class="relative flex-1 min-w-0 max-w-md search-container">
-            <input 
-              type="text" 
-              v-model="searchQuery"
-              placeholder="Search recipes..." 
-              class="search-input-bar w-full h-[40px] bg-white/95 text-lg text-[#222] font-semibold px-4 pr-20 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-[#058696] transition-all duration-300" 
-              style="border:none;" 
-            />
-            <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#058696] pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-              <circle cx="11" cy="11" r="8"/>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"/>
-            </svg>
-            
-            <!-- Filter Button -->
-            <button 
-              @click="toggleFilterDropdown"
-              class="absolute right-10 top-1/2 transform -translate-y-1/2 w-6 h-6 text-[#058696] hover:text-[#047a8a] transition-colors duration-200"
-            >
-              <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
-                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+      <!-- Main Content Area with Recipe Grid and Preview -->
+      <div class="flex-1 w-full max-w-7xl flex gap-4">
+        <!-- Recipe Grid and Search Container -->
+        <div class="flex-1 overflow-y-auto">
+          <!-- Search Bar - Aligned with Recipe Grid -->
+          <div class="mb-4 ml-20">
+            <div class="relative max-w-md search-container ml-2">
+              <input 
+                type="text" 
+                v-model="searchQuery"
+                placeholder="Search recipes..." 
+                class="search-input-bar w-full h-[40px] bg-[#D9D9D9]/95 text-lg text-[#222] font-semibold px-4 pr-20 rounded-lg shadow-lg focus:outline-none focus:ring-2 focus:ring-[#333] transition-all duration-300" 
+                style="border:none;" 
+              />
+              <svg class="absolute right-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-[#333] pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <circle cx="11" cy="11" r="8"/>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"/>
               </svg>
-            </button>
-            
-            <!-- Filter Dropdown -->
-            <div v-if="showFilterDropdown" class="absolute top-full left-0 right-0 mt-2 bg-white/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg z-50">
-              <div class="p-3 space-y-2">
-                <div class="text-sm font-semibold text-[#222] mb-2">Filter by:</div>
-                <label 
-                  v-for="filter in filters" 
-                  :key="filter.name"
-                  class="flex items-center space-x-2 cursor-pointer hover:bg-white/50 rounded px-2 py-1 transition-colors duration-200"
-                >
-                  <input 
-                    type="checkbox" 
-                    :checked="selectedFilters.includes(filter.name)"
-                    @change="toggleFilter(filter.name)"
-                    class="w-4 h-4 text-[#058696] rounded focus:ring-[#058696]"
-                  />
-                  <span class="text-sm text-[#222]">{{ filter.name }}</span>
-                </label>
+              
+              <!-- Filter Button -->
+              <button 
+                @click="toggleFilterDropdown"
+                class="absolute right-10 top-1/2 transform -translate-y-1/2 w-6 h-6 text-[#333] hover:text-[#047a8a] transition-colors duration-200"
+              >
+                <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </button>
+              
+              <!-- Filter Dropdown -->
+              <div v-if="showFilterDropdown" class="absolute top-full right-0 mt-2 bg-[#E8E8E8]/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg z-50 w-1/2">
+                <div class="p-3 space-y-2">
+                  <div class="text-sm font-semibold text-[#222] mb-2">Filter by:</div>
+                  <label 
+                    v-for="filter in filters" 
+                    :key="filter.name"
+                    class="flex items-center space-x-2 cursor-pointer hover:bg-white/50 rounded px-2 py-1 transition-colors duration-200"
+                  >
+                    <input 
+                      type="checkbox" 
+                      :checked="selectedFilters.includes(filter.name)"
+                      @change="toggleFilter(filter.name)"
+                      class="w-4 h-4 text-[#058696] rounded focus:ring-[#058696]"
+                    />
+                    <span class="text-sm text-[#222]">{{ filter.name }}</span>
+                  </label>
+                </div>
               </div>
             </div>
           </div>
 
-          <!-- Action Buttons -->
-          <!-- Action Buttons moved to top right -->
-        </div>
-      </div>
-
-      <!-- Main Content Area with Recipe Grid and Preview -->
-      <div class="flex-1 w-full max-w-7xl flex gap-4">
-        <!-- Recipe Grid -->
-        <div class="flex-1 overflow-y-auto">
-          <div class="grid grid-cols-5 md:grid-cols-8 lg:grid-cols-10 xl:grid-cols-12 gap-1.5 ml-8">
+          <!-- Recipe Grid -->
+          <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 ml-20">
             <div 
               v-for="(recipe, index) in filteredRecipes" 
               :key="recipe.id"
-              class="recipe-card bg-white/10 backdrop-blur-sm border border-white/20 rounded-md p-1 hover:bg-white/20 transition-all duration-300 cursor-pointer group"
+              class="recipe-square bg-white/10 backdrop-blur-sm border border-white/20 rounded-md p-2 hover:bg-white/20 transition-all duration-300 cursor-pointer group min-w-[80px]"
               @click="selectRecipe(recipe)"
               @mouseenter="showPreview(recipe, index)"
               @mouseleave="hidePreview"
             >
               <!-- Recipe Image - Tiny Square -->
-              <div class="relative w-full aspect-square mb-1 rounded-sm overflow-hidden">
+              <div class="relative w-full aspect-square mb-2 rounded-sm overflow-hidden">
                 <img 
                   :src="recipe.picture" 
                   :alt="recipe.name"
@@ -108,8 +103,8 @@
               </div>
               
               <!-- Recipe Info -->
-              <div class="space-y-0.5">
-                <h3 class="text-[8px] font-bold text-white transition-colors duration-300 line-clamp-1 leading-tight">
+              <div class="space-y-1">
+                <h3 class="text-[10px] font-bold text-white transition-colors duration-300 line-clamp-1 leading-tight">
                   {{ recipe.name }}
                 </h3>
                 
@@ -121,7 +116,7 @@
                       :key="n"
                       :src="getHeartSrc(n, recipe.hearts)"
                       alt="heart"
-                      class="w-1.5 h-1.5"
+                      class="w-2 h-2"
                     />
                   </div>
                 </div>
@@ -292,7 +287,7 @@ export default {
       // Add a small delay to prevent flickering when moving between cards
       setTimeout(() => {
         // Only hide if we're not hovering over any recipe card
-        const hoveredElement = document.querySelector('.recipe-card:hover');
+        const hoveredElement = document.querySelector('.recipe-square:hover');
         if (!hoveredElement) {
           previewVisible.value = false;
           setTimeout(() => {
@@ -386,72 +381,6 @@ export default {
   font-weight: 500;
 }
 
-.filter-btn {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  border: 2px solid rgba(255,255,255,0.3);
-  padding: 0.75rem 1.5rem;
-  border-radius: 1rem;
-  font-size: 1rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-}
-
-.filter-btn.active,
-.filter-btn:hover {
-  background: linear-gradient(135deg, #058696 0%, #047a8a 100%);
-  color: #fff;
-  border-color: rgba(255,255,255,0.5);
-  transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(5, 134, 150, 0.3);
-}
-
-.filter-btn-compact {
-  background: rgba(255,255,255,0.15);
-  color: #fff;
-  border: 1px solid rgba(255,255,255,0.3);
-  padding: 0.5rem 1rem;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  backdrop-filter: blur(10px);
-  display: flex;
-  align-items: center;
-  white-space: nowrap;
-}
-
-.filter-btn-compact.active,
-.filter-btn-compact:hover {
-  background: linear-gradient(135deg, #058696 0%, #047a8a 100%);
-  color: #fff;
-  border-color: rgba(255,255,255,0.5);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 15px rgba(5, 134, 150, 0.3);
-}
-
-.action-btn {
-  display: flex;
-  align-items: center;
-  font-size: 1.25rem;
-  font-weight: 600;
-  border: 2px solid transparent;
-  border-radius: 0.75rem;
-  padding: 1rem 2rem;
-  transition: all 0.3s;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-}
-
-.action-btn:hover {
-  transform: scale(1.05);
-}
-
 .action-btn-compact {
   display: flex;
   align-items: center;
@@ -472,19 +401,19 @@ export default {
 
 .line-clamp-1 {
   display: -webkit-box;
-  -webkit-line-clamp: 1;
   -webkit-box-orient: vertical;
   overflow: hidden;
 }
 
-.recipe-card {
+.recipe-square {
   backdrop-filter: blur(15px);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(255, 255, 255, 0.2);
   background: rgba(255, 255, 255, 0.08);
+  margin-top: 6px;
 }
 
-.recipe-card:hover {
+.recipe-square:hover {
   transform: translateY(-2px);
   box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
   border-color: rgba(255, 255, 255, 0.3);
@@ -496,7 +425,7 @@ export default {
   box-shadow: none !important;
   background: transparent !important;
   backdrop-filter: none !important;
-  margin-left: -320px;
+  margin-left: -120px;
   margin-top: -60px;
   max-width: 260px;
 }

@@ -16,7 +16,7 @@
         </div>
       </div>
     </div>
-    <div class="rupee-container">
+    <div v-if="showRupees" class="rupee-container">
       <img src="/assets/ui-assets/rupee.png" alt="Rupee" class="rupee-icon" />
     </div>
   </div>
@@ -29,6 +29,10 @@ export default {
     currentView: {
       type: String,
       default: 'home'
+    },
+    showRupees: {
+      type: Boolean,
+      default: true
     }
   },
   computed: {
