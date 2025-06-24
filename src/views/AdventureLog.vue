@@ -5,6 +5,14 @@
     </div>
     <div class="absolute inset-0 w-full h-full z-10 overlay-blur"></div>
     <img src="/assets/ui-assets/sword-overlay.png" alt="Sword Overlay" class="sword-overlay" draggable="false" />
+    
+    <!-- Main Quest Section (Left Side) -->
+    <div class="main-quest-wrapper">
+      <div class="main-quest-header">
+        <span class="main-quest-title">Main Quest</span>
+      </div>
+    </div>
+    
     <div class="al-content-wrapper">
       <img src="/assets/ui-assets/adventure-log-content.png" alt="Adventure Log Content" class="al-content-overlay" draggable="false" />
       <div class="al-header">
@@ -107,12 +115,31 @@ export default {
   height: auto; 
   z-index: 16;
 }
+.main-quest-wrapper {
+  position: absolute;
+  left: 60px;
+  bottom: 510px;
+  width: 540px;
+  max-width: 60vw;
+  height: auto; 
+  z-index: 16;
+}
 .al-content-overlay {
   width: 100%;
   height: auto;
   display: block;
   pointer-events: none;
   user-select: none;
+}
+.main-quest-header {
+  position: absolute;
+  top: 4%;  
+  left: 4%;   
+  width: 60%;
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
 }
 .al-header {
   position: absolute;
@@ -127,6 +154,14 @@ export default {
 .al-title {
   font-size: 1.7vw;
   font-weight: bold;
+  font-style: italic;
+  color: #fff;
+  letter-spacing: 0.5px;
+  margin-bottom: 0.05em;
+}
+.main-quest-title {
+  font-size: 1.6vw;
+  font-weight: 500;
   font-style: italic;
   color: #fff;
   letter-spacing: 0.5px;
