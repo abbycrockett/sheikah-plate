@@ -8,6 +8,7 @@
         <div 
           v-if="cardVisible" 
           class="relative flex items-center justify-center pop-card z-10"
+          @click="showOptions"
         >
           <img 
             src="/assets/ui-assets/full-recipe-box.svg" 
@@ -48,12 +49,25 @@
                 <li v-for="(ingredient, idx) in recipe.ingredients" :key="ingredient"
                     :class="[ 'text-lg cursor-pointer select-none', { 'line-through text-gray-400': crossed[idx] } ]"
                     style="color: #453906;"
-                    @click="toggleCross(idx)">
+                    @click.stop="toggleCross(idx)">
                   {{ ingredient }}
                 </li>
               </ul>
             </div>
           </div>
+          
+          <!-- Options overlay -->
+          <transition name="fade">
+            <div v-if="optionsVisible" 
+                 class="absolute"
+                 :style="{ left: clickX + 'px', top: clickY + 'px', transform: 'translate(-50%, -50%)' }">
+              <div class="relative w-32 h-24">
+                <div class="absolute top-0 w-32 h-8 edit-option"></div>
+                <div class="absolute top-8 w-32 h-8 delete-option"></div>
+                <div class="absolute top-16 w-32 h-8 exit-option" @click="closeCard"></div>
+              </div>
+            </div>
+          </transition>
         </div>
       </transition>
     </div>
@@ -79,7 +93,10 @@ export default {
       visible: false,
       cardVisible: false,
       closeTimeout: null,
-      crossed: []
+      crossed: [],
+      optionsVisible: false,
+      clickX: 0,
+      clickY: 0
     }
   },
   mounted() {
@@ -118,6 +135,16 @@ export default {
   methods: {
     toggleCross(idx) {
       this.crossed[idx] = !this.crossed[idx];
+    },
+    showOptions(event) {
+      this.optionsVisible = !this.optionsVisible;
+      const rect = event.currentTarget.getBoundingClientRect();
+      this.clickX = event.clientX - rect.left;
+      this.clickY = event.clientY - rect.top;
+    },
+    closeCard() {
+      this.cardVisible = false;
+      this.$emit('close');
     }
   },
   beforeUnmount() {
@@ -195,5 +222,41 @@ export default {
 
 .line-through {
   text-decoration: line-through;
+}
+
+.edit-option {
+  background-image: url('/assets/ui-assets/edit.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+.edit-option:hover {
+  background-image: url('/assets/ui-assets/edit-hover.png') !important;
+}
+
+.delete-option {
+  background-image: url('/assets/ui-assets/delete.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+.delete-option:hover {
+  background-image: url('/assets/ui-assets/delete-hover.png') !important;
+}
+
+.exit-option {
+  background-image: url('/assets/ui-assets/exit.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  cursor: pointer;
+}
+
+.exit-option:hover {
+  background-image: url('/assets/ui-assets/exit-hover.png') !important;
 }
 </style> 
