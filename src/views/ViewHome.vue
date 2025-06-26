@@ -260,13 +260,17 @@ export default {
     }
 
     function getHeartSrc(n, hearts) {
+      // Check if we're on GitHub Pages
+      const isGitHubPages = window.location.hostname.includes('github.io');
+      const basePath = isGitHubPages ? '/sheikah-plate' : '';
+      
       if (hearts >= n) {
-        return './assets/ui-assets/full-heart.png';
+        return `${basePath}/assets/ui-assets/full-heart.png`;
       }
       if (hearts >= n - 0.5) {
-        return './assets/ui-assets/half-heart.png';
+        return `${basePath}/assets/ui-assets/half-heart.png`;
       }
-      return './assets/ui-assets/empty-heart.png';
+      return `${basePath}/assets/ui-assets/empty-heart.png`;
     }
 
     function getRecipeImageUrl(recipe) {
