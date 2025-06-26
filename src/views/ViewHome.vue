@@ -260,9 +260,9 @@ export default {
     }
 
     function getHeartSrc(n, hearts) {
-      // Check if we're on GitHub Pages
-      const isGitHubPages = window.location.hostname.includes('github.io');
-      const basePath = isGitHubPages ? '/sheikah-plate' : '';
+      // Default to GitHub Pages paths, but allow override for local development
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const basePath = isLocal ? '' : '/sheikah-plate';
       
       if (hearts >= n) {
         return `${basePath}/assets/ui-assets/full-heart.png`;

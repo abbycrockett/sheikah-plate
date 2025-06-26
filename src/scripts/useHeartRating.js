@@ -9,6 +9,10 @@ import { ref } from 'vue';
 export function useHeartRating(initialValue = 0) {
   const hearts = ref(initialValue);
 
+  // Use the same logic as in the components
+  const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+  const basePath = isLocal ? '' : '/sheikah-plate';
+
   /**
    * Determines the correct heart image source based on the rating.
    * @param {number} n - The heart number (1-5).
@@ -16,12 +20,12 @@ export function useHeartRating(initialValue = 0) {
    */
   const getHeartSrc = (n) => {
     if (hearts.value >= n) {
-      return '/assets/ui-assets/full-heart.png';
+      return `${basePath}/assets/ui-assets/full-heart.png`;
     }
     if (hearts.value >= n - 0.5) {
-      return '/assets/ui-assets/half-heart.png';
+      return `${basePath}/assets/ui-assets/half-heart.png`;
     }
-    return '/assets/ui-assets/empty-heart.png';
+    return `${basePath}/assets/ui-assets/empty-heart.png`;
   };
 
   /**
