@@ -16,11 +16,11 @@
             class="max-w-full max-h-[89.9vh]"
           />
           <!-- Recipe content will go here -->
-          <div class="absolute inset-0 flex items-start justify-start pt-16 pl-32">
+          <div class="absolute inset-0 pt-16 pl-40">
             <!-- Left-aligned content block -->
-            <div class="flex flex-col items-center">
+            <div class="relative w-44">
               <!-- Recipe Image -->
-              <div class="w-44 h-44 border-4 rounded-md transform -translate-x-14" style="border-color: #554502; background-color: rgba(0,0,0,0.2);">
+              <div class="w-44 h-44 border-4 rounded-md" style="border-color: #554502; background-color: rgba(0,0,0,0.2);">
                 <img 
                   v-if="recipe.picture"
                   :src="recipe.picture" 
@@ -30,12 +30,12 @@
               </div>
               
               <!-- Recipe Nameplate -->
-              <div class="relative mt-4 flex items-center justify-center px-6 py-2 bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-700 rounded-md shadow-md transform -translate-x-14 w-70">
+              <div class="absolute top-48 left-1/2 transform -translate-x-1/2 flex items-center justify-center px-6 py-2 bg-gradient-to-r from-yellow-700 via-yellow-600 to-yellow-700 rounded-md shadow-md w-max">
                   <span class="text-white text-2xl font-bold tracking-wider" style="font-family: var(--main-font);">{{ recipe.name }}</span>
               </div>
 
               <!-- Directions -->
-              <div v-if="recipe.directions" class="mt-6 text-left max-w-xs transform -translate-x-14">
+              <div v-if="recipe.directions" class="absolute top-64 -left-12 text-left max-w-xs w-full">
                 <p class="text-lg leading-snug" style="color: #453906;">
                   {{ recipe.directions }}
                 </p>

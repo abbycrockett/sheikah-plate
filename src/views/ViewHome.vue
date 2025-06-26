@@ -98,7 +98,7 @@
           </div>
 
           <!-- Recipe Grid -->
-          <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 ml-20">
+          <div class="grid grid-cols-5 gap-2 ml-20 max-w-md">
             <div 
               v-for="(recipe, index) in filteredRecipes" 
               :key="recipe.id"
