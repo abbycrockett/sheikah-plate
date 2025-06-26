@@ -53,17 +53,32 @@
               <button 
                 @click="toggleFilterDropdown"
                 class="absolute right-10 top-1/2 transform -translate-y-1/2 w-6 h-6 text-[#333] hover:text-[#047a8a] transition-colors duration-200"
+                :class="{ 'text-[#047a8a]': selectedFilters.length > 0 }"
               >
                 <svg fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
                 </svg>
+                <!-- Filter count badge -->
+                <span v-if="selectedFilters.length > 0" 
+                      class="absolute -top-1 -right-1 bg-[#047a8a] text-white text-xs rounded-full w-4 h-4 flex items-center justify-center">
+                  {{ selectedFilters.length }}
+                </span>
               </button>
               
               <!-- Filter Dropdown -->
               <div v-if="showFilterDropdown" class="absolute top-full right-0 mt-2 bg-[#E8E8E8]/95 backdrop-blur-sm border border-white/20 rounded-lg shadow-lg z-50 w-1/2">
                 <div class="p-3 space-y-2">
-                  <div class="text-sm font-semibold text-[#222] mb-2">Filter by:</div>
+                  <div class="flex justify-between items-center mb-2">
+                    <div class="text-sm font-semibold text-[#222]">Filter by:</div>
+                    <button 
+                      v-if="selectedFilters.length > 0"
+                      @click="selectedFilters = []"
+                      class="text-xs text-[#047a8a] hover:text-[#058696] transition-colors duration-200"
+                    >
+                      Clear all
+                    </button>
+                  </div>
                   <label 
                     v-for="filter in filters" 
                     :key="filter.name"
@@ -148,7 +163,8 @@
       v-if="showFullRecipe" 
       :recipe="selectedRecipe" 
       :closing="fullRecipeClosing" 
-      @close="handleFullRecipeClose" 
+      @close="handleFullRecipeClose"
+      @delete="handleRecipeDelete"
     />
   </div>
 </template>
@@ -159,7 +175,7 @@ import MenuBar from '../components/MenuBar.vue';
 import { Recipe } from '../models/Recipe.js';
 import FullRecipeCard from '../components/FullRecipeCard.vue';
 import RecipeCard from '../components/RecipeCard.vue';
-import { loadRecipes } from '../scripts/recipesStorage.js';
+import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js';
 
 export default {
   name: 'ViewHome',
@@ -211,11 +227,8 @@ export default {
         
         const matchesFilter = selectedFilters.value.length === 0 || 
           selectedFilters.value.some(filter => {
-            // Simple category mapping - you can expand this later
-            if (filter === 'Breakfast') return recipe.name.includes('Skewer');
-            if (filter === 'Entrée') return recipe.name.includes('Skewer');
-            if (filter === 'Dessert') return recipe.name.includes('Cake') || recipe.name.includes('Candy');
-            return true;
+            // Check if recipe has a category and it matches the selected filter
+            return recipe.category && recipe.category === filter;
           });
         
         return matchesSearch && matchesFilter;
@@ -275,6 +288,13 @@ export default {
       }, 300);
     }
 
+    function handleRecipeDelete(recipe) {
+      deleteRecipe(recipe.id);
+      refreshRecipes();
+      // Close the full recipe modal
+      handleFullRecipeClose();
+    }
+
     function handleKeyPress(event) {
       if (showFullRecipe.value) {
         handleFullRecipeClose();
@@ -318,6 +338,7 @@ export default {
       selectedRecipe,
       fullRecipeClosing,
       handleFullRecipeClose,
+      handleRecipeDelete,
       showFilterDropdown,
       toggleFilterDropdown,
       previewRecipe,

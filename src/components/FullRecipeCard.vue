@@ -63,7 +63,7 @@
                  :style="{ left: clickX + 'px', top: clickY + 'px', transform: 'translate(-50%, -50%)' }">
               <div class="relative w-32 h-24">
                 <div class="absolute top-0 w-32 h-8 edit-option"></div>
-                <div class="absolute top-8 w-32 h-8 delete-option"></div>
+                <div class="absolute top-8 w-32 h-8 delete-option" @click="showDeleteModal"></div>
                 <div class="absolute top-16 w-32 h-8 exit-option" @click="closeCard"></div>
               </div>
             </div>
@@ -72,12 +72,27 @@
       </transition>
     </div>
   </transition>
+  
+  <!-- Delete Confirmation Modal -->
+  <DeleteConfirmationModal
+    :visible="deleteModalVisible"
+    :recipe-name="recipe.name"
+    @confirm="handleDeleteConfirm"
+    @cancel="handleDeleteCancel"
+    @close="deleteModalVisible = false"
+  />
 </template>
 
 <script>
 import { ref, watch, onBeforeUnmount } from 'vue';
+import DeleteConfirmationModal from './DeleteConfirmationModal.vue';
+
 export default {
   name: 'FullRecipeCard',
+  components: {
+    DeleteConfirmationModal
+  },
+  emits: ['close', 'delete'],
   props: {
     recipe: {
       type: Object,
@@ -96,7 +111,8 @@ export default {
       crossed: [],
       optionsVisible: false,
       clickX: 0,
-      clickY: 0
+      clickY: 0,
+      deleteModalVisible: false
     }
   },
   mounted() {
@@ -140,11 +156,22 @@ export default {
       this.optionsVisible = !this.optionsVisible;
       const rect = event.currentTarget.getBoundingClientRect();
       this.clickX = event.clientX - rect.left;
-      this.clickY = event.clientY - rect.top;
+      this.clickY = event.clientY - rect.top - 32;
     },
     closeCard() {
       this.cardVisible = false;
       this.$emit('close');
+    },
+    showDeleteModal() {
+      this.deleteModalVisible = true;
+    },
+    handleDeleteConfirm() {
+      this.$emit('delete', this.recipe);
+      this.closeCard();
+    },
+    handleDeleteCancel() {
+      // Modal will close itself, just hide options
+      this.optionsVisible = false;
     }
   },
   beforeUnmount() {

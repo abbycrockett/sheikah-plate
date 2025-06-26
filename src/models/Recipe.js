@@ -1,5 +1,5 @@
 export class Recipe {
-  constructor(name = '', picture = null, description = '', hearts = 0, directions = '', ingredients = []) {
+  constructor(name = '', picture = null, description = '', hearts = 0, directions = '', ingredients = [], category = '') {
     this.id = this.generateId()
     this.name = name
     this.picture = picture
@@ -7,6 +7,7 @@ export class Recipe {
     this.hearts = hearts
     this.directions = directions
     this.ingredients = ingredients
+    this.category = category
     this.createdAt = new Date()
     this.updatedAt = new Date()
   }
@@ -103,13 +104,14 @@ export class Recipe {
       hearts: this.hearts,
       directions: this.directions,
       ingredients: this.ingredients,
+      category: this.category,
       createdAt: this.createdAt,
       updatedAt: this.updatedAt
     }
   }
 
   static fromJSON(data) {
-    const recipe = new Recipe(data.name, data.picture, data.description || '', data.hearts || 0, data.directions || '', data.ingredients || [])
+    const recipe = new Recipe(data.name, data.picture, data.description || '', data.hearts || 0, data.directions || '', data.ingredients || [], data.category || '')
     recipe.id = data.id
     recipe.createdAt = new Date(data.createdAt)
     recipe.updatedAt = new Date(data.updatedAt)

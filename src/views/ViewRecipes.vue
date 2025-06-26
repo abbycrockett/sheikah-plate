@@ -58,7 +58,13 @@
       </transition>
     </div>
 
-    <FullRecipeCard v-if="showFullRecipe" :recipe="recipes[activeIndex]" :closing="fullRecipeClosing" @close="handleFullRecipeClose" />
+    <FullRecipeCard 
+      v-if="showFullRecipe" 
+      :recipe="recipes[activeIndex]" 
+      :closing="fullRecipeClosing" 
+      @close="handleFullRecipeClose"
+      @delete="handleRecipeDelete"
+    />
   </div>
 </template>
 
@@ -67,7 +73,7 @@ import { ref, onMounted, onUnmounted } from 'vue'
 import RecipeCard from '../components/RecipeCard.vue'
 import FullRecipeCard from '../components/FullRecipeCard.vue'
 import { Recipe } from '../models/Recipe.js'
-import { loadRecipes } from '../scripts/recipesStorage.js'
+import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js'
 
 export default {
   name: 'ViewRecipes',
@@ -106,6 +112,26 @@ export default {
     }
     
     function handleFullRecipeClose() {
+      showFullRecipe.value = false;
+      fullRecipeClosing.value = false;
+    }
+    
+    function handleRecipeDelete(recipe) {
+      console.log('handleRecipeDelete called with recipe:', recipe);
+      console.log('Recipe ID to delete:', recipe.id);
+      deleteRecipe(recipe.id);
+      console.log('After deleteRecipe call');
+      refreshRecipes();
+      console.log('After refreshRecipes call, recipes count:', recipes.value.length);
+      // Adjust active index if we deleted the last recipe or current recipe
+      if (recipes.value.length === 0) {
+        // No recipes left
+        showFullRecipe.value = false;
+      } else if (activeIndex.value >= recipes.value.length) {
+        // We deleted a recipe and now the active index is out of bounds
+        activeIndex.value = recipes.value.length - 1;
+      }
+      // Close the full recipe modal
       showFullRecipe.value = false;
       fullRecipeClosing.value = false;
     }
@@ -167,7 +193,8 @@ export default {
       showFullRecipe,
       fullRecipeClosing,
       handleFullRecipeClose,
-      handleRecipeCardClick
+      handleRecipeCardClick,
+      handleRecipeDelete
     }
   }
 }
