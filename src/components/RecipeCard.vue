@@ -112,12 +112,12 @@ export default {
     getHeartSrc(n) {
       const hearts = this.recipe.hearts;
       if (hearts >= n) {
-        return '/assets/ui-assets/full-heart.png';
+        return './assets/ui-assets/full-heart.png';
       }
       if (hearts >= n - 0.5) {
-        return '/assets/ui-assets/half-heart.png';
+        return './assets/ui-assets/half-heart.png';
       }
-      return '/assets/ui-assets/empty-heart.png';
+      return './assets/ui-assets/empty-heart.png';
     }
   }
 }
