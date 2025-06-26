@@ -261,12 +261,12 @@ export default {
 
     function getHeartSrc(n, hearts) {
       if (hearts >= n) {
-        return getAssetPath('/assets/ui-assets/full-heart.png');
+        return './assets/ui-assets/full-heart.png';
       }
       if (hearts >= n - 0.5) {
-        return getAssetPath('/assets/ui-assets/half-heart.png');
+        return './assets/ui-assets/half-heart.png';
       }
-      return getAssetPath('/assets/ui-assets/empty-heart.png');
+      return './assets/ui-assets/empty-heart.png';
     }
 
     function getRecipeImageUrl(recipe) {
