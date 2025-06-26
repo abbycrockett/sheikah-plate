@@ -93,7 +93,7 @@
                     <p class="text-[#666] text-sm">PNG, JPG, GIF up to 10MB</p>
                   </div>
                   <div v-else class="upload-preview">
-                    <img :src="recipe.photo" alt="Recipe preview" class="w-full h-full object-cover rounded-lg" />
+                    <img :src="photoPreviewUrl" alt="Recipe preview" class="w-full h-full object-cover rounded-lg" />
                     <button @click.stop="removePhoto" class="remove-photo-btn">
                       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -268,9 +268,12 @@ export default {
       if (cropper) {
         const canvas = cropper.getResult().canvas;
         if (canvas) {
-          recipe.photo = canvas.toDataURL('image/png');
-          cropping.value = false;
-          cropSrc.value = '';
+          // Compress and store as Blob
+          canvas.toBlob((blob) => {
+            recipe.photo = blob;
+            cropping.value = false;
+            cropSrc.value = '';
+          }, 'image/jpeg', 0.7); // Use JPEG for better compression
         }
       }
     };
@@ -287,7 +290,14 @@ export default {
       }
     };
 
-    const saveRecipe = () => {
+    const photoPreviewUrl = computed(() => {
+      if (!recipe.photo) return '';
+      if (typeof recipe.photo === 'string') return recipe.photo;
+      // If it's a Blob, create an object URL
+      return URL.createObjectURL(recipe.photo);
+    });
+
+    const saveRecipe = async () => {
       if (!isFormValid.value) return;
       // Add hearts rating to recipe
       const recipeToSave = {
@@ -297,12 +307,17 @@ export default {
         picture: recipe.photo,
         ingredients: recipe.ingredients.split('\n').map(i => i.trim()).filter(Boolean),
       };
-      saveRecipeToStorage(recipeToSave);
-      if (typeof window !== 'undefined') {
-        window.dispatchEvent(new Event('recipe-added'));
+      try {
+        await saveRecipeToStorage(recipeToSave);
+        if (typeof window !== 'undefined') {
+          window.dispatchEvent(new Event('recipe-added'));
+        }
+        emit('recipe-added');
+        emit('back-to-home');
+      } catch (e) {
+        alert('Failed to save recipe. Please try again.');
+        console.error(e);
       }
-      emit('recipe-added');
-      emit('back-to-home');
     };
 
     return {
@@ -323,6 +338,7 @@ export default {
       cropperRef,
       applyCrop,
       cancelCrop,
+      photoPreviewUrl,
     };
   }
 }

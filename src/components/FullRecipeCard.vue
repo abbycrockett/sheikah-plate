@@ -23,7 +23,7 @@
               <div class="w-44 h-44 border-4 rounded-md" style="border-color: #554502; background-color: rgba(0,0,0,0.2);">
                 <img 
                   v-if="recipe.picture"
-                  :src="recipe.picture" 
+                  :src="pictureUrl"
                   :alt="recipe.name" 
                   class="w-full h-full object-cover"
                 />
@@ -113,6 +113,13 @@ export default {
       clickX: 0,
       clickY: 0,
       deleteModalVisible: false
+    }
+  },
+  computed: {
+    pictureUrl() {
+      if (!this.recipe.picture) return '';
+      if (typeof this.recipe.picture === 'string') return this.recipe.picture;
+      return URL.createObjectURL(this.recipe.picture);
     }
   },
   mounted() {

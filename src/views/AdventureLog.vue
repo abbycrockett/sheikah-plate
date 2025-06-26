@@ -30,7 +30,9 @@
         </div>
       </div>
     </div>
-    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'adventure-log'" />
+    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'adventure-log'" 
+      @switch-recipes="$emit('show-home')"
+    />
     <div class="relative z-20 flex flex-col items-center w-full">
       <!-- Add adventure log content here -->
     </div>

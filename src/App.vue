@@ -5,6 +5,7 @@
       v-if="currentView === 'home'" 
       @show-recipes="currentView = 'recipes'" 
       @show-add-recipe="currentView = 'add-recipe'" 
+      @show-adventure-log="currentView = 'adventure-log'"
     />
     <ViewRecipes 
       v-else-if="currentView === 'recipes'" 
@@ -16,6 +17,7 @@
     />
     <AdventureLog 
       v-else-if="currentView === 'adventure-log'" 
+      @show-home="currentView = 'home'"
     />
   </div>
 </template>

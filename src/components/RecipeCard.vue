@@ -28,7 +28,7 @@
         <!-- Recipe Picture -->
         <div v-if="recipe.picture" class="mt-6 flex items-center justify-center w-full px-8">
           <img 
-            :src="recipe.picture" 
+            :src="pictureUrl" 
             :alt="`Image of ${recipe.name}`" 
             class="max-w-full object-contain drop-shadow-lg transition-all duration-500 ease-out"
             :class="isActive ? 'max-h-[140px]' : 'max-h-[100px]'"
@@ -101,6 +101,11 @@ export default {
         const opacity = Math.max(0.2, 1 - distance * 0.4)
         return `${baseClasses} scale-${Math.round(scale * 100)} opacity-${Math.round(opacity * 100)} z-0`
       }
+    },
+    pictureUrl() {
+      if (!this.recipe.picture) return '';
+      if (typeof this.recipe.picture === 'string') return this.recipe.picture;
+      return URL.createObjectURL(this.recipe.picture);
     }
   },
   methods: {
