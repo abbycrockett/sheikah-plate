@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy": "npm run build && git add docs && git commit -m 'Deploy to GitHub Pages'"
   },
   "dependencies": {
     "vue": "^3.3.4",

@@ -27,7 +27,9 @@
       </button>
     </div>
     
-    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'recipes'" :showRupees="false" />
+    <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'recipes'" :showRupees="false" 
+      @switch-adventure-log="$emit('show-adventure-log')"
+    />
     
     <div class="relative z-20 flex flex-col items-center w-full h-full pt-24 pb-8 px-6">
       <!-- Main Content Area with Recipe Grid and Preview -->
@@ -98,7 +100,7 @@
           </div>
 
           <!-- Recipe Grid -->
-          <div class="grid grid-cols-4 md:grid-cols-6 lg:grid-cols-8 xl:grid-cols-10 gap-2 ml-20">
+          <div class="grid grid-cols-5 gap-2 ml-20 max-w-md">
             <div 
               v-for="(recipe, index) in filteredRecipes" 
               :key="recipe.id"
@@ -110,7 +112,7 @@
               <!-- Recipe Image - Tiny Square -->
               <div class="relative w-full aspect-square mb-2 rounded-sm overflow-hidden">
                 <img 
-                  :src="recipe.picture" 
+                  :src="getRecipeImageUrl(recipe)" 
                   :alt="recipe.name"
                   class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                 />
@@ -146,6 +148,8 @@
             v-if="previewRecipe"
             class="sticky top-24 transition-all duration-300 ease-out"
             :class="previewVisible ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-4'"
+            @mouseenter="isHoveringPreview = true"  
+            @mouseleave="isHoveringPreview = false"
           >
             <RecipeCard 
               :recipe="previewRecipe" 
@@ -180,7 +184,7 @@ import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js';
 export default {
   name: 'ViewHome',
   components: { MenuBar, FullRecipeCard, RecipeCard },
-  emits: ['show-recipes', 'show-add-recipe'],
+  emits: ['show-recipes', 'show-add-recipe', 'show-adventure-log'],
   setup() {
     const searchQuery = ref('');
     const selectedFilters = ref([]);
@@ -191,6 +195,7 @@ export default {
     const previewRecipe = ref(null);
     const previewIndex = ref(0);
     const previewVisible = ref(false);
+    const isHoveringPreview = ref(false);
     
     const filters = [
       {
@@ -209,8 +214,8 @@ export default {
 
     // Remove hardcoded recipes, use localStorage
     const recipes = ref([]);
-    function refreshRecipes() {
-      recipes.value = loadRecipes();
+    async function refreshRecipes() {
+      recipes.value = await loadRecipes();
     }
     refreshRecipes();
 
@@ -254,6 +259,12 @@ export default {
       return '/assets/ui-assets/empty-heart.png';
     }
 
+    function getRecipeImageUrl(recipe) {
+      if (!recipe.picture) return '';
+      if (typeof recipe.picture === 'string') return recipe.picture;
+      return URL.createObjectURL(recipe.picture);
+    }
+
     function selectRecipe(recipe) {
       selectedRecipe.value = recipe;
       showFullRecipe.value = true;
@@ -266,11 +277,9 @@ export default {
     }
 
     function hidePreview() {
-      // Add a small delay to prevent flickering when moving between cards
       setTimeout(() => {
-        // Only hide if we're not hovering over any recipe card
         const hoveredElement = document.querySelector('.recipe-square:hover');
-        if (!hoveredElement) {
+        if (!hoveredElement && !isHoveringPreview.value) {
           previewVisible.value = false;
           setTimeout(() => {
             previewRecipe.value = null;
@@ -345,7 +354,9 @@ export default {
       previewIndex,
       previewVisible,
       showPreview,
-      hidePreview
+      hidePreview,
+      getRecipeImageUrl,
+      isHoveringPreview
     };
   }
 }

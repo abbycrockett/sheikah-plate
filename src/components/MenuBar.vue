@@ -6,9 +6,9 @@
     <div class="menu-content">
       <div class="title-section">
         <div class="title-row">
-          <img v-if="currentView === 'recipes'" src="/assets/ui-assets/l-button.png" alt="L Button" class="l-button" />
+          <img v-if="currentView === 'recipes'" src="/assets/ui-assets/l-button.png" alt="L Button" class="l-button" @click="$emit('switch-adventure-log')" style="cursor:pointer;" />
           <h1 class="title">{{ titleText }}</h1>
-          <img v-if="currentView === 'adventure-log'" src="/assets/ui-assets/r-button.png" alt="R Button" class="r-button" />
+          <img v-if="currentView === 'adventure-log'" src="/assets/ui-assets/r-button.png" alt="R Button" class="r-button" @click="$emit('switch-recipes')" style="cursor:pointer;" />
         </div>
         <div class="circles-container">
           <div class="circle" :class="leftCircleClass"></div>

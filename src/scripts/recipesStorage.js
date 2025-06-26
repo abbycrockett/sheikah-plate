@@ -1,51 +1,64 @@
-// Utility for saving and loading recipes from localStorage
-const STORAGE_KEY = 'sheikah_plate_recipes';
+// Utility for saving and loading recipes from IndexedDB
+const DB_NAME = 'sheikah_plate_db';
+const STORE_NAME = 'recipes';
+const DB_VERSION = 1;
 
-// Migration function to ensure all recipes have a category property
-function migrateRecipes(recipes) {
-  return recipes.map(recipe => {
-    if (!recipe.category) {
-      // Assign default category based on recipe name for existing recipes
-      let defaultCategory = 'Entrée'; // default
-      if (recipe.name.includes('Cake') || recipe.name.includes('Candy')) {
-        defaultCategory = 'Dessert';
-      } else if (recipe.name.includes('Skewer')) {
-        defaultCategory = 'Breakfast';
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    request.onupgradeneeded = (event) => {
+      const db = event.target.result;
+      if (!db.objectStoreNames.contains(STORE_NAME)) {
+        db.createObjectStore(STORE_NAME, { keyPath: 'id' });
       }
-      recipe.category = defaultCategory;
-    }
-    return recipe;
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
   });
 }
 
-export function loadRecipes() {
-  const data = localStorage.getItem(STORAGE_KEY);
-  if (!data) return [];
-  try {
-    const recipes = JSON.parse(data);
-    const migratedRecipes = migrateRecipes(recipes);
-    // Save migrated recipes back to localStorage
-    if (migratedRecipes.length > 0) {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(migratedRecipes));
-    }
-    return migratedRecipes;
-  } catch (e) {
-    return [];
-  }
+export async function loadRecipes() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.getAll();
+    request.onsuccess = () => {
+      resolve(request.result);
+    };
+    request.onerror = () => reject(request.error);
+  });
 }
 
-export function saveRecipe(recipe) {
-  const recipes = loadRecipes();
-  recipes.push(recipe);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(recipes));
+export async function saveRecipe(recipe) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.put(recipe);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
 }
 
-export function deleteRecipe(recipeId) {
-  const recipes = loadRecipes();
-  const filteredRecipes = recipes.filter(recipe => recipe.id !== recipeId);
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(filteredRecipes));
+export async function deleteRecipe(recipeId) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.delete(recipeId);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
 }
 
-export function clearRecipes() {
-  localStorage.removeItem(STORAGE_KEY);
+export async function clearRecipes() {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.clear();
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
 } 
