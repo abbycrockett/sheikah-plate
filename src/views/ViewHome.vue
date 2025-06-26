@@ -249,14 +249,24 @@ export default {
       }
     }
 
+    function getAssetPath(path) {
+      // Check if we're on GitHub Pages by looking at the hostname
+      if (window.location.hostname.includes('github.io')) {
+        // For GitHub Pages, we need to add the repository name prefix
+        return `/sheikah-plate${path}`;
+      }
+      // Local development and preview - use relative paths
+      return path;
+    }
+
     function getHeartSrc(n, hearts) {
       if (hearts >= n) {
-        return './assets/ui-assets/full-heart.png';
+        return getAssetPath('/assets/ui-assets/full-heart.png');
       }
       if (hearts >= n - 0.5) {
-        return './assets/ui-assets/half-heart.png';
+        return getAssetPath('/assets/ui-assets/half-heart.png');
       }
-      return './assets/ui-assets/empty-heart.png';
+      return getAssetPath('/assets/ui-assets/empty-heart.png');
     }
 
     function getRecipeImageUrl(recipe) {

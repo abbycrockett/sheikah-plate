@@ -109,15 +109,23 @@ export default {
     }
   },
   methods: {
+    getAssetPath(path) {
+      // Check if we're on GitHub Pages by looking at the hostname
+      if (window.location.hostname.includes('github.io')) {
+        return `/sheikah-plate${path}`;
+      }
+      // Local development and preview
+      return path;
+    },
     getHeartSrc(n) {
       const hearts = this.recipe.hearts;
       if (hearts >= n) {
-        return './assets/ui-assets/full-heart.png';
+        return this.getAssetPath('/assets/ui-assets/full-heart.png');
       }
       if (hearts >= n - 0.5) {
-        return './assets/ui-assets/half-heart.png';
+        return this.getAssetPath('/assets/ui-assets/half-heart.png');
       }
-      return './assets/ui-assets/empty-heart.png';
+      return this.getAssetPath('/assets/ui-assets/empty-heart.png');
     }
   }
 }
