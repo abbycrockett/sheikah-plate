@@ -1,50 +1,27 @@
 <template>
   <div class="w-full h-screen flex flex-col items-center justify-center">
-    <AddRecipePg1 
-      v-if="currentPage === 1" 
-      @back-to-home="$emit('back-to-home')" 
-      @next-page="currentPage = 2" 
-    />
-    <AddRecipePg2 
-      v-else-if="currentPage === 2" 
-      @back-to-home="$emit('back-to-home')" 
-      @previous-page="currentPage = 1" 
+    <AddRecipeForm 
+      @back-to-home="$emit('back-to-home')"
+      @save="handleSave"
     />
   </div>
 </template>
 
 <script>
-import AddRecipePg1 from '../components/AddRecipePg1.vue';
-import AddRecipePg2 from '../components/AddRecipePg2.vue';
+import AddRecipeForm from '../components/AddRecipeForm.vue';
 
 export default {
   name: 'RecipeMaintenance',
   components: {
-    AddRecipePg1,
-    AddRecipePg2
+    AddRecipeForm
   },
   emits: ['back-to-home'],
-  data() {
-    return {
-      currentPage: 1
-    };
-  },
-  mounted() {
-    window.addEventListener('keydown', this.handleArrowNav);
-  },
-  beforeUnmount() {
-    window.removeEventListener('keydown', this.handleArrowNav);
-  },
   methods: {
-    handleArrowNav(e) {
-      const tag = e.target.tagName;
-      const isEditable = e.target.isContentEditable;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || isEditable) return;
-      if (e.key === 'ArrowLeft' && this.currentPage === 2) {
-        this.currentPage = 1;
-      } else if (e.key === 'ArrowRight' && this.currentPage === 1) {
-        this.currentPage = 2;
-      }
+    handleSave(recipe) {
+      // For now, just log the recipe. You can add storage logic here.
+      console.log('Recipe to save:', recipe);
+      // Optionally, emit back-to-home or show a notification
+      this.$emit('back-to-home');
     }
   }
 }
