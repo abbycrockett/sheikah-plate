@@ -1,18 +1,52 @@
 <template>
   <div class="w-full h-screen flex flex-col items-center justify-center">
-    <AddRecipe @back-to-home="$emit('back-to-home')" />
+    <AddRecipePg1 
+      v-if="currentPage === 1" 
+      @back-to-home="$emit('back-to-home')" 
+      @next-page="currentPage = 2" 
+    />
+    <AddRecipePg2 
+      v-else-if="currentPage === 2" 
+      @back-to-home="$emit('back-to-home')" 
+      @previous-page="currentPage = 1" 
+    />
   </div>
 </template>
 
 <script>
-import AddRecipe from '../components/AddRecipe.vue';
+import AddRecipePg1 from '../components/AddRecipePg1.vue';
+import AddRecipePg2 from '../components/AddRecipePg2.vue';
 
 export default {
   name: 'RecipeMaintenance',
   components: {
-    AddRecipe
+    AddRecipePg1,
+    AddRecipePg2
   },
-  emits: ['back-to-home']
+  emits: ['back-to-home'],
+  data() {
+    return {
+      currentPage: 1
+    };
+  },
+  mounted() {
+    window.addEventListener('keydown', this.handleArrowNav);
+  },
+  beforeUnmount() {
+    window.removeEventListener('keydown', this.handleArrowNav);
+  },
+  methods: {
+    handleArrowNav(e) {
+      const tag = e.target.tagName;
+      const isEditable = e.target.isContentEditable;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || isEditable) return;
+      if (e.key === 'ArrowLeft' && this.currentPage === 2) {
+        this.currentPage = 1;
+      } else if (e.key === 'ArrowRight' && this.currentPage === 1) {
+        this.currentPage = 2;
+      }
+    }
+  }
 }
 </script>
 
