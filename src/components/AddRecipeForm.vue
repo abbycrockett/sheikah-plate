@@ -13,20 +13,24 @@
       </button>
     </div>
     <!-- Backgrounds -->
-    <img
-      v-if="currentStep === 1"
-      src="/assets/ui-assets/kakariko-bg.png"
-      alt="Kakariko Background"
-      class="absolute left-0 top-0 h-full object-left object-cover select-none pointer-events-none"
-      draggable="false"
-    />
-    <img
-      v-else
-      src="/assets/ui-assets/link-happy-bg.png"
-      alt="Link Happy Background"
-      class="absolute left-0 top-0 h-full object-left object-cover select-none pointer-events-none"
-      draggable="false"
-    />
+    <transition name="fade-bg">
+      <img
+        v-if="currentStep === 1"
+        key="kakariko"
+        src="/assets/ui-assets/kakariko-bg.png"
+        alt="Kakariko Background"
+        class="absolute left-0 top-0 h-full object-left object-cover select-none pointer-events-none"
+        draggable="false"
+      />
+      <img
+        v-else
+        key="linkhappy"
+        src="/assets/ui-assets/link-happy-bg.png"
+        alt="Link Happy Background"
+        class="absolute left-0 top-0 h-full object-left object-cover select-none pointer-events-none"
+        draggable="false"
+      />
+    </transition>
     <img
       src="/assets/ui-assets/add-bg.svg"
       alt="Add Background"
@@ -438,5 +442,16 @@ export default {
 
 .heart:hover {
   transform: scale(1.08);
+}
+
+/* Fade transition for background images */
+.fade-bg-enter-active, .fade-bg-leave-active {
+  transition: opacity 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.fade-bg-enter-from, .fade-bg-leave-to {
+  opacity: 0;
+}
+.fade-bg-enter-to, .fade-bg-leave-from {
+  opacity: 1;
 }
 </style> 

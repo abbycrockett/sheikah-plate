@@ -61,4 +61,26 @@ export async function clearRecipes() {
     request.onsuccess = () => resolve();
     request.onerror = () => reject(request.error);
   });
+}
+
+export async function updateRecipe(recipe) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.put(recipe);
+    request.onsuccess = () => resolve();
+    request.onerror = () => reject(request.error);
+  });
+}
+
+export async function loadRecipeById(id) {
+  const db = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readonly');
+    const store = tx.objectStore(STORE_NAME);
+    const request = store.get(id);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
 } 

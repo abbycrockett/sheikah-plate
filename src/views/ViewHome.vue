@@ -8,7 +8,7 @@
     
     <div class="absolute top-2 right-2 z-40 flex gap-4">
       <button 
-        @click="$emit('show-recipes')" 
+        @click="goToRecipes" 
         class="action-btn-compact bg-[#058696] hover:bg-[#047a8a] text-white"
       >
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -17,7 +17,7 @@
         View All
       </button>
       <button 
-        @click="$emit('show-add-recipe')" 
+        @click="goToAddRecipe" 
         class="action-btn-compact bg-[#F1362F] hover:bg-[#d42e28] text-white"
       >
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -28,7 +28,7 @@
     </div>
     
     <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'recipes'" :showRupees="false" 
-      @switch-adventure-log="$emit('show-adventure-log')"
+      @switch-adventure-log="goToAdventureLog"
     />
     
     <div class="relative z-20 flex flex-col items-center w-full h-full pt-24 pb-8 px-6">
@@ -164,11 +164,19 @@
 
     <!-- Full Recipe Card Popup -->
     <FullRecipeCard 
-      v-if="showFullRecipe" 
+      v-if="showFullRecipe && !showEditForm" 
       :recipe="selectedRecipe" 
       :closing="fullRecipeClosing" 
       @close="handleFullRecipeClose"
       @delete="handleRecipeDelete"
+      @edit="handleRecipeEdit"
+    />
+
+    <EditRecipeForm
+      v-if="showEditForm"
+      :recipe="editingRecipe"
+      @back-to-home="handleEditFormClose"
+      @updated="() => { handleEditFormClose(); refreshRecipes(); }"
     />
   </div>
 </template>
@@ -180,11 +188,12 @@ import { Recipe } from '../models/Recipe.js';
 import FullRecipeCard from '../components/FullRecipeCard.vue';
 import RecipeCard from '../components/RecipeCard.vue';
 import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js';
+import EditRecipeForm from '../components/EditRecipeForm.vue';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'ViewHome',
   components: { MenuBar, FullRecipeCard, RecipeCard },
-  emits: ['show-recipes', 'show-add-recipe', 'show-adventure-log'],
   setup() {
     const searchQuery = ref('');
     const selectedFilters = ref([]);
@@ -196,6 +205,7 @@ export default {
     const previewIndex = ref(0);
     const previewVisible = ref(false);
     const isHoveringPreview = ref(false);
+    const router = useRouter();
     
     const filters = [
       {
@@ -321,6 +331,13 @@ export default {
     function handleKeyPress(event) {
       if (showFullRecipe.value) {
         handleFullRecipeClose();
+        return;
+      }
+      if (
+        event.key === 'l' || event.key === 'L' ||
+        event.key === 'ArrowLeft'
+      ) {
+        goToAdventureLog();
       }
     }
 
@@ -333,6 +350,25 @@ export default {
 
     function toggleFilterDropdown() {
       showFilterDropdown.value = !showFilterDropdown.value;
+    }
+
+    function handleRecipeEdit(recipe) {
+      router.push({ name: 'EditRecipe', params: { id: recipe.id } });
+    }
+
+    function handleEditFormClose() {
+      showEditForm.value = false;
+      editingRecipe.value = null;
+    }
+
+    function goToRecipes() {
+      router.push({ name: 'Recipes' });
+    }
+    function goToAddRecipe() {
+      router.push({ name: 'AddRecipe' });
+    }
+    function goToAdventureLog() {
+      router.push({ name: 'AdventureLog' });
     }
 
     onMounted(() => {
@@ -370,7 +406,11 @@ export default {
       showPreview,
       hidePreview,
       getRecipeImageUrl,
-      isHoveringPreview
+      isHoveringPreview,
+      handleRecipeEdit,
+      goToRecipes,
+      goToAddRecipe,
+      goToAdventureLog
     };
   }
 }

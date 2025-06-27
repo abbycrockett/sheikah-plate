@@ -62,7 +62,7 @@
                  class="absolute"
                  :style="{ left: clickX + 'px', top: clickY + 'px', transform: 'translate(-50%, -50%)' }">
               <div class="relative w-32 h-24">
-                <div class="absolute top-0 w-32 h-8 edit-option"></div>
+                <div class="absolute top-0 w-32 h-8 edit-option" @click.stop="$emit('edit', recipe)"></div>
                 <div class="absolute top-8 w-32 h-8 delete-option" @click="showDeleteModal"></div>
                 <div class="absolute top-16 w-32 h-8 exit-option" @click="closeCard"></div>
               </div>
@@ -92,7 +92,7 @@ export default {
   components: {
     DeleteConfirmationModal
   },
-  emits: ['close', 'delete'],
+  emits: ['close', 'delete', 'edit'],
   props: {
     recipe: {
       type: Object,

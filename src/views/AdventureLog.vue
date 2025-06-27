@@ -31,7 +31,7 @@
       </div>
     </div>
     <MenuBar class="absolute top-0 left-0 w-full z-30" :currentView="'adventure-log'" 
-      @switch-recipes="$emit('show-home')"
+      @switch-recipes="goToRecipes"
     />
     <div class="relative z-20 flex flex-col items-center w-full">
       <!-- Add adventure log content here -->
@@ -41,10 +41,32 @@
 
 <script>
 import MenuBar from '../components/MenuBar.vue';
+import { useRouter } from 'vue-router';
+import { onMounted, onUnmounted } from 'vue';
 
 export default {
   name: 'AdventureLog',
   components: { MenuBar },
+  setup() {
+    const router = useRouter();
+    function goToRecipes() {
+      router.push({ name: 'Home' });
+    }
+    function handleKeydown(event) {
+      if (event.key === 'r' || event.key === 'R' || 
+        event.key === 'ArrowRight'
+      ) {
+        goToRecipes();
+      }
+    }
+    onMounted(() => {
+      document.addEventListener('keydown', handleKeydown);
+    });
+    onUnmounted(() => {
+      document.removeEventListener('keydown', handleKeydown);
+    });
+    return { goToRecipes };
+  },
   data() {
     return {
       descriptionLines: [

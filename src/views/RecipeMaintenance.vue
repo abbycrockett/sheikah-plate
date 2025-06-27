@@ -1,7 +1,7 @@
 <template>
   <div class="w-full h-screen flex flex-col items-center justify-center">
     <AddRecipeForm 
-      @back-to-home="$emit('back-to-home')"
+      @back-to-home="goHome"
       @save="handleSave"
     />
   </div>
@@ -9,20 +9,24 @@
 
 <script>
 import AddRecipeForm from '../components/AddRecipeForm.vue';
+import { useRouter } from 'vue-router';
 
 export default {
   name: 'RecipeMaintenance',
   components: {
     AddRecipeForm
   },
-  emits: ['back-to-home'],
-  methods: {
-    handleSave(recipe) {
+  setup() {
+    const router = useRouter();
+    function goHome() {
+      router.push({ name: 'Home' });
+    }
+    function handleSave(recipe) {
       // For now, just log the recipe. You can add storage logic here.
       console.log('Recipe to save:', recipe);
-      // Optionally, emit back-to-home or show a notification
-      this.$emit('back-to-home');
+      goHome();
     }
+    return { goHome, handleSave };
   }
 }
 </script>
