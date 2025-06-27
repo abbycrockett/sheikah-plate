@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
-import { createRouter, createWebHistory } from 'vue-router';
+import { createRouter, createWebHashHistory } from 'vue-router';
 import ViewHome from './views/ViewHome.vue';
 import EditRecipeForm from './components/EditRecipeForm.vue';
 import ViewRecipes from './views/ViewRecipes.vue';
@@ -14,11 +14,10 @@ const routes = [
   { path: '/adventure-log', name: 'AdventureLog', component: AdventureLog },
   { path: '/add', name: 'AddRecipe', component: RecipeMaintenance },
   { path: '/edit/:id', name: 'EditRecipe', component: EditRecipeForm, props: true },
-  // You can add an add route if needed
 ];
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 
