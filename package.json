@@ -10,7 +10,8 @@
   },
   "dependencies": {
     "vue": "^3.3.4",
-    "vue-advanced-cropper": "^2.8.9"
+    "vue-advanced-cropper": "^2.8.9",
+    "vue-router": "^4.5.1"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

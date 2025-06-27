@@ -13,7 +13,7 @@ export default {
   position: fixed;
   inset: 0;
   z-index: -1; /* Send to the background */
-  background: linear-gradient(
+  /* background: linear-gradient(
     45deg,
     rgba(0, 191, 255, 0.02) 0%,
     rgba(0, 191, 255, 0.08) 20%,
@@ -23,10 +23,10 @@ export default {
     rgba(0, 191, 255, 0.02) 100%
   );
   background-size: 400% 400%;
-  animation: move-gradient 60s ease-in infinite;
+  animation: move-gradient 60s ease-in infinite; */
 }
 
-@keyframes move-gradient {
+/* @keyframes move-gradient {
   0% {
     background-position: 15% 25%;
   }
@@ -51,6 +51,6 @@ export default {
   100% {
     background-position: 15% 25%;
   }
-}
+} */
 </style>
 

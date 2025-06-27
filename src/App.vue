@@ -1,74 +1,17 @@
 <template>
   <div id="app" class="w-full h-screen">
     <GlobalOverlay />
-    <ViewHome 
-      v-if="currentView === 'home'" 
-      @show-recipes="currentView = 'recipes'" 
-      @show-add-recipe="currentView = 'add-recipe'" 
-      @show-adventure-log="currentView = 'adventure-log'"
-    />
-    <ViewRecipes 
-      v-else-if="currentView === 'recipes'" 
-      @back-to-home="currentView = 'home'" 
-    />
-    <RecipeMaintenance 
-      v-else-if="currentView === 'add-recipe'" 
-      @back-to-home="currentView = 'home'" 
-    />
-    <AdventureLog 
-      v-else-if="currentView === 'adventure-log'" 
-      @show-home="currentView = 'home'"
-    />
+    <router-view />
   </div>
 </template>
 
 <script>
-import { ref, watch, onMounted, onUnmounted } from 'vue';
 import GlobalOverlay from './components/GlobalOverlay.vue';
-import ViewHome from './views/ViewHome.vue';
-import ViewRecipes from './views/ViewRecipes.vue';
-import RecipeMaintenance from './views/RecipeMaintenance.vue';
-import AdventureLog from './views/AdventureLog.vue';
 
 export default {
   name: 'App',
   components: {
-    GlobalOverlay,
-    ViewHome,
-    ViewRecipes,
-    RecipeMaintenance,
-    AdventureLog
-  },
-  setup() {
-    const currentView = ref('home');
-
-    watch(currentView, (newView) => {
-      console.log('Current view is now:', newView);
-    });
-
-    function handleKeydown(e) {
-      // Don't handle navigation if user is typing in an input field
-      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.contentEditable === 'true') {
-        return;
-      }
-      
-      if (currentView.value === 'home' && (e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'l')) {
-        currentView.value = 'adventure-log';
-      } else if (currentView.value === 'adventure-log' && (e.key === 'ArrowRight' || e.key === 'd' || e.key === 'r')) {
-        currentView.value = 'home';
-      }
-    }
-
-    onMounted(() => {
-      window.addEventListener('keydown', handleKeydown);
-    });
-    onUnmounted(() => {
-      window.removeEventListener('keydown', handleKeydown);
-    });
-
-    return {
-      currentView
-    };
+    GlobalOverlay
   }
 }
 </script>
