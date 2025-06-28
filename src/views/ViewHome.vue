@@ -8,13 +8,15 @@
     
     <div class="absolute top-2 right-2 z-40 flex gap-4">
       <button 
-        @click="goToRecipes" 
+        @click="showBackupModal = true"
         class="action-btn-compact bg-[#058696] hover:bg-[#047a8a] text-white"
       >
         <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16"/>
+          <ellipse cx="12" cy="6" rx="8" ry="3" stroke-width="2" />
+          <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 6v6c0 1.657 3.582 3 8 3s8-1.343 8-3V6" />
+          <path stroke-width="2" stroke-linecap="round" stroke-linejoin="round" d="M4 12v6c0 1.657 3.582 3 8 3s8-1.343 8-3v-6" />
         </svg>
-        View All
+        Backup
       </button>
       <button 
         @click="goToAddRecipe" 
@@ -178,6 +180,12 @@
       @back-to-home="handleEditFormClose"
       @updated="() => { handleEditFormClose(); refreshRecipes(); }"
     />
+
+    <BackupModal
+      v-if="showBackupModal"
+      @close="showBackupModal = false"
+      @recipes-imported="handleRecipesImported"
+    />
   </div>
 </template>
 
@@ -190,10 +198,11 @@ import RecipeCard from '../components/RecipeCard.vue';
 import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js';
 import EditRecipeForm from '../components/EditRecipeForm.vue';
 import { useRouter } from 'vue-router';
+import BackupModal from '../components/BackupModal.vue';
 
 export default {
   name: 'ViewHome',
-  components: { MenuBar, FullRecipeCard, RecipeCard },
+  components: { MenuBar, FullRecipeCard, RecipeCard, BackupModal },
   setup() {
     const searchQuery = ref('');
     const selectedFilters = ref([]);
@@ -206,6 +215,9 @@ export default {
     const previewVisible = ref(false);
     const isHoveringPreview = ref(false);
     const router = useRouter();
+    const showBackupModal = ref(false);
+    const showEditForm = ref(false);
+    const editingRecipe = ref(null);
     
     const filters = [
       {
@@ -285,8 +297,31 @@ export default {
 
     function getRecipeImageUrl(recipe) {
       if (!recipe.picture) return '';
-      if (typeof recipe.picture === 'string') return recipe.picture;
-      return URL.createObjectURL(recipe.picture);
+      
+      // Handle string URLs (base64 data URLs or regular URLs)
+      if (typeof recipe.picture === 'string') {
+        return recipe.picture;
+      }
+      
+      // Handle Blob objects
+      if (recipe.picture instanceof Blob || recipe.picture instanceof File) {
+        try {
+          return URL.createObjectURL(recipe.picture);
+        } catch (error) {
+          console.warn('Error creating object URL for recipe:', recipe.name, error);
+          return '';
+        }
+      }
+      
+      // Handle other object types that might have been serialized
+      if (typeof recipe.picture === 'object' && recipe.picture !== null) {
+        console.warn('Unexpected picture object type for recipe:', recipe.name, recipe.picture);
+        return '';
+      }
+      
+      // If it's not a valid type, return empty string
+      console.warn('Invalid picture type for recipe:', recipe.name, typeof recipe.picture);
+      return '';
     }
 
     function selectRecipe(recipe) {
@@ -371,6 +406,10 @@ export default {
       router.push({ name: 'AdventureLog' });
     }
 
+    function handleRecipesImported() {
+      refreshRecipes();
+    }
+
     onMounted(() => {
       document.addEventListener('keydown', handleKeyPress);
       document.addEventListener('click', handleClickOutside);
@@ -410,7 +449,11 @@ export default {
       handleRecipeEdit,
       goToRecipes,
       goToAddRecipe,
-      goToAdventureLog
+      goToAdventureLog,
+      showBackupModal,
+      handleRecipesImported,
+      showEditForm,
+      editingRecipe
     };
   }
 }
