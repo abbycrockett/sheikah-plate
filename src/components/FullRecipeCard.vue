@@ -112,14 +112,45 @@ export default {
       optionsVisible: false,
       clickX: 0,
       clickY: 0,
-      deleteModalVisible: false
+      deleteModalVisible: false,
+      objectUrl: null
     }
   },
   computed: {
     pictureUrl() {
+      // Clean up previous object URL
+      if (this.objectUrl) {
+        URL.revokeObjectURL(this.objectUrl)
+        this.objectUrl = null
+      }
+      
       if (!this.recipe.picture) return '';
-      if (typeof this.recipe.picture === 'string') return this.recipe.picture;
-      return URL.createObjectURL(this.recipe.picture);
+      
+      // Handle string URLs (base64 data URLs or regular URLs)
+      if (typeof this.recipe.picture === 'string') {
+        return this.recipe.picture;
+      }
+      
+      // Handle Blob objects
+      if (this.recipe.picture instanceof Blob || this.recipe.picture instanceof File) {
+        try {
+          this.objectUrl = URL.createObjectURL(this.recipe.picture);
+          return this.objectUrl;
+        } catch (error) {
+          console.warn('Error creating object URL for recipe:', this.recipe.name, error);
+          return '';
+        }
+      }
+      
+      // Handle other object types that might have been serialized
+      if (typeof this.recipe.picture === 'object' && this.recipe.picture !== null) {
+        console.warn('Unexpected picture object type for recipe:', this.recipe.name, this.recipe.picture);
+        return '';
+      }
+      
+      // If it's not a valid type, return empty string
+      console.warn('Invalid picture type for recipe:', this.recipe.name, typeof this.recipe.picture);
+      return '';
     }
   },
   mounted() {
@@ -183,6 +214,10 @@ export default {
   },
   beforeUnmount() {
     clearTimeout(this.closeTimeout)
+    // Clean up object URL when component is destroyed
+    if (this.objectUrl) {
+      URL.revokeObjectURL(this.objectUrl)
+    }
   }
 }
 </script>
