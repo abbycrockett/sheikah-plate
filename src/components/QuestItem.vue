@@ -49,11 +49,11 @@ export default {
     disabled: { type: Boolean, default: false },
     style: { type: [Object, String], default: null },
     icon: { type: String, default: '' },
+    showQuestMarker: { type: Boolean, default: false },
   },
   data() {
     return {
       isFocused: false,
-      showQuestMarker: false,
     };
   },
   computed: {
@@ -78,7 +78,6 @@ export default {
     },
     handleClick(e) {
       if (!this.disabled) {
-        this.showQuestMarker = !this.showQuestMarker;
         this.$emit('click', e);
       }
     },

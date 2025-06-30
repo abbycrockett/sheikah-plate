@@ -13,10 +13,13 @@
       </div>
       <div class="main-quest-items">
         <QuestItem
-          label="Add a new recipe"
-          location="Hateno Village"
-          @click="onQuestClick"
-          style="min-width: 410px; max-width: 90%;"
+          v-for="quest in activeQuests"
+          :key="quest.id"
+          :label="quest.title"
+          :location="quest.location"
+          :showQuestMarker="quest.id === questWithMarker"
+          @click="onQuestClick(quest.id)"
+          style="min-width: 410px; max-width: 90%; margin-bottom: 0.5em;"
         />
       </div>
     </div>
@@ -24,17 +27,20 @@
     <div class="al-content-wrapper select-none" style="user-select: none;" draggable="false">
       <img src="/assets/ui-assets/adventure-log-content.png" alt="Adventure Log Content" class="al-content-overlay" draggable="false" />
       <div class="al-header">
-        <span class="al-title">Add a new recipe</span>
+        <span class="al-title">{{ selectedQuest?.title || 'Select a quest' }}</span>
         <div class="al-underline"></div>
         <div class="al-row">
           <div class="al-requestor">
             <img src="/assets/ui-assets/notification.png" alt="Notification" class="notification-icon" />
-            <span class="requestor-name">Zelda</span>
+            <span class="requestor-name">{{ selectedQuest?.requestor || '' }}</span>
           </div>
-          <div class="al-location">Hateno Village</div>
+          <div class="al-location">{{ selectedQuest?.location || '' }}</div>
         </div>
         <div class="al-description">
-          <div v-for="(line, idx) in displayedLines" :key="idx" v-html="line"></div>
+          <div v-if="selectedQuest">
+            <div v-for="(line, idx) in displayedLines" :key="idx" v-html="line"></div>
+          </div>
+          <div v-else>Select a quest from the left to view its details.</div>
         </div>
       </div>
     </div>
@@ -52,6 +58,7 @@ import MenuBar from '../components/MenuBar.vue';
 import QuestItem from '../components/QuestItem.vue';
 import { useRouter } from 'vue-router';
 import { onMounted, onUnmounted } from 'vue';
+import { getActiveQuests, getQuestById } from '../data/quests.js';
 
 export default {
   name: 'AdventureLog',
@@ -78,29 +85,56 @@ export default {
   },
   data() {
     return {
-      descriptionLines: [
-        'After saving Hyrule from Calamity Ganon, Zelda moves in with you. Upon visiting the Hateno Ancient Tech Lab, Purah updates your Sheikah Slate so that you can store <span class="al-highlight">recipes.</span>',
-        "\n",
-        "Since you have less off your plate, Zelda asks you to share your favorite meals with her.",
-        "\n",
-        "Purah's words echo in your memory. To access your recipes use the right arrow key or press r..."
-      ],
-      displayedLines: ["", "", ""],
+      activeQuests: [],
+      selectedQuest: null,
+      displayedLines: [],
       currentLine: 0,
       currentChar: 0,
       typingInterval: null,
+      questWithMarker: null, // Track which quest has the marker
     };
   },
   mounted() {
-    this.startTyping();
+    this.loadQuests();
   },
   methods: {
+    loadQuests() {
+      this.activeQuests = getActiveQuests();
+      // Select the first quest by default if available
+      if (this.activeQuests.length > 0) {
+        this.selectedQuest = this.activeQuests[0];
+        this.questWithMarker = this.activeQuests[0].id; // Set first quest as having marker
+        this.startTyping();
+      }
+    },
+    onQuestClick(questId) {
+      this.selectedQuest = getQuestById(questId);
+      this.questWithMarker = questId; // Move marker to clicked quest
+      this.startTyping();
+    },
     startTyping() {
+      // Clear any existing typing interval
+      if (this.typingInterval) {
+        clearInterval(this.typingInterval);
+      }
+      
+      if (!this.selectedQuest) return;
+      
+      // Use description array directly - each item is a paragraph
+      const descriptionLines = this.selectedQuest.description;
+      this.displayedLines = new Array(descriptionLines.length).fill('');
+      this.currentLine = 0;
+      this.currentChar = 0;
+      
       this.typingInterval = setInterval(this.typeNextChar, 19); // Adjust speed here
     },
     typeNextChar() {
-      if (this.currentLine < this.descriptionLines.length) {
-        const fullLine = this.descriptionLines[this.currentLine];
+      if (!this.selectedQuest) return;
+      
+      const descriptionLines = this.selectedQuest.description;
+      
+      if (this.currentLine < descriptionLines.length) {
+        const fullLine = descriptionLines[this.currentLine];
         if (this.currentChar < fullLine.length) {
           this.displayedLines.splice(
             this.currentLine,
@@ -109,6 +143,7 @@ export default {
           );
           this.currentChar++;
         } else {
+          // Move to next paragraph
           this.currentLine++;
           this.currentChar = 0;
         }
@@ -116,12 +151,11 @@ export default {
         clearInterval(this.typingInterval);
       }
     },
-    onQuestClick() {
-      
     },
-  },
   beforeDestroy() {
-    clearInterval(this.typingInterval);
+    if (this.typingInterval) {
+      clearInterval(this.typingInterval);
+    }
   },
 }
 </script>
@@ -270,4 +304,4 @@ export default {
 .al-description :deep(.al-highlight) {
   color: #F15050;
 }
-</style> 
+</style>
