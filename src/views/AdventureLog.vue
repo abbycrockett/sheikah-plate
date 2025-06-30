@@ -11,6 +11,14 @@
       <div class="main-quest-header">
         <span class="main-quest-title">Main Quest</span>
       </div>
+      <div class="main-quest-items">
+        <QuestItem
+          label="Add a new recipe"
+          location="Hateno Village"
+          @click="onQuestClick"
+          style="min-width: 410px; max-width: 90%;"
+        />
+      </div>
     </div>
     
     <div class="al-content-wrapper select-none" style="user-select: none;" draggable="false">
@@ -41,12 +49,13 @@
 
 <script>
 import MenuBar from '../components/MenuBar.vue';
+import QuestItem from '../components/QuestItem.vue';
 import { useRouter } from 'vue-router';
 import { onMounted, onUnmounted } from 'vue';
 
 export default {
   name: 'AdventureLog',
-  components: { MenuBar },
+  components: { MenuBar, QuestItem },
   setup() {
     const router = useRouter();
     function goToRecipes() {
@@ -107,6 +116,9 @@ export default {
         clearInterval(this.typingInterval);
       }
     },
+    onQuestClick() {
+      
+    },
   },
   beforeDestroy() {
     clearInterval(this.typingInterval);
@@ -142,11 +154,22 @@ export default {
 .main-quest-wrapper {
   position: absolute;
   left: 60px;
-  bottom: 510px;
+  top: 110px;
   width: 540px;
   max-width: 60vw;
   height: auto; 
   z-index: 16;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+.main-quest-items {
+  margin-top: 2.5em;
+  margin-left: 1em;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 100%;
 }
 .al-content-overlay {
   width: 100%;
@@ -193,10 +216,11 @@ export default {
 }
 .al-underline {
   width: 100%;
-  height: 0.04em;
+  height: 0.09em;
   background: #fff;
   border-radius: 2px;
   margin-bottom: 0.1em;
+  opacity: 30%;
 }
 .al-row {
   display: flex;

@@ -1,5 +1,5 @@
 <template>
-  <div class="relative w-full h-screen overflow-hidden">
+  <div class="relative w-full h-screen overflow-hidden" tabindex="0" @keydown="handleKeydown">
     <!-- Back Button -->
     <div class="absolute top-6 left-6 z-20">
       <button 
@@ -171,7 +171,7 @@ Pour into a pan and bake until golden brown."
 </template>
 
 <script>
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useHeartRating } from '../scripts/useHeartRating.js';
 import { saveRecipe as saveRecipeToStorage } from '../scripts/recipesStorage.js';
 
@@ -236,6 +236,26 @@ export default {
         console.error(e);
       }
     }
+    function handleKeydown(e) {
+      if (e.key === 'ArrowLeft') {
+        if (currentStep.value > 1) {
+          currentStep.value--;
+        }
+      } else if (e.key === 'ArrowRight') {
+        if (currentStep.value < 2) {
+          currentStep.value++;
+        }
+      }
+    }
+
+    onMounted(() => {
+      // Auto-focus the container to enable keyboard navigation immediately
+      const container = document.querySelector('.relative.w-full.h-screen.overflow-hidden');
+      if (container) {
+        container.focus();
+      }
+    });
+
     return {
       currentStep,
       recipeName,
@@ -254,6 +274,7 @@ export default {
       handleSave,
       isFormValid,
       categories: ['Breakfast', 'Entrée', 'Dessert'],
+      handleKeydown,
     };
   },
 };
