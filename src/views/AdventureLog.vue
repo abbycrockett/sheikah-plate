@@ -13,7 +13,7 @@
       </div>
     </div>
     
-    <div class="al-content-wrapper">
+    <div class="al-content-wrapper select-none" style="user-select: none;" draggable="false">
       <img src="/assets/ui-assets/adventure-log-content.png" alt="Adventure Log Content" class="al-content-overlay" draggable="false" />
       <div class="al-header">
         <span class="al-title">Add a new recipe</span>

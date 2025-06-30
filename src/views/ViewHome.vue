@@ -102,7 +102,7 @@
           </div>
 
           <!-- Recipe Grid -->
-          <div class="grid grid-cols-5 gap-2 ml-20 max-w-md">
+          <div class="recipe-grid-scroll ml-20 max-w-md">
             <div 
               v-for="(recipe, index) in filteredRecipes" 
               :key="recipe.id"
@@ -529,5 +529,33 @@ export default {
   margin-left: -120px;
   margin-top: -60px;
   max-width: 260px;
+}
+
+.recipe-grid-scroll {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  max-height: calc(80px * 5 + 16px); /* 3 rows + gap */
+  overflow-y: auto;
+  padding-right: 6px; /* space for scrollbar */
+}
+
+.recipe-grid-scroll::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+.recipe-grid-scroll::-webkit-scrollbar-thumb {
+  background: rgba(5, 134, 150, 0.25);
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.recipe-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 134, 150, 0.45);
+}
+
+/* Firefox */
+.recipe-grid-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(5,134,150,0.25) rgba(255,255,255,0.05);
 }
 </style> 

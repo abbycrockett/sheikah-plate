@@ -45,18 +45,18 @@
           <div v-show="currentStep === 1" class="flex flex-col gap-6">
             <!-- Recipe Name -->
             <div>
-              <label for="recipe-name" class="recipe-label">Recipe Name</label>
+              <label for="recipe-name" class="recipe-label select-none" draggable="false">Recipe Name</label>
               <input
                 id="recipe-name"
                 v-model="recipeName"
                 type="text"
-                placeholder="e.g., Mushroom Skewer"
+                placeholder="e.g., Carrot Cake"
                 class="recipe-input"
               />
             </div>
             <!-- Category -->
             <div>
-              <label class="recipe-label">Category</label>
+              <label class="recipe-label select-none" draggable="false">Category</label>
               <div class="flex gap-3">
                 <button
                   v-for="cat in categories"
@@ -74,7 +74,7 @@
             </div>
             <!-- Image Upload -->
             <div>
-              <label class="recipe-label">Recipe Image</label>
+              <label class="recipe-label select-none" draggable="false">Recipe Image</label>
               <div class="flex flex-col items-start gap-2">
                 <input
                   ref="fileInput"
@@ -89,9 +89,9 @@
                 >
                   <img v-if="imagePreview" :src="imagePreview" alt="Preview" class="upload-preview" />
                   <div v-else class="upload-placeholder">
-                    <img src="/assets/ui-assets/camera-rune.svg" alt="Camera" class="camera-icon" />
-                    <span class="upload-text">Click to upload</span>
-                    <span class="upload-subtext">PNG, JPG, GIF up to 10MB</span>
+                    <img src="/assets/ui-assets/camera-rune.svg" alt="Camera" class="camera-icon select-none" draggable="false" />
+                    <span class="upload-text select-none" draggable="false">Click to upload</span>
+                    <span class="upload-subtext select-none" draggable="false">PNG, JPG, GIF up to 10MB</span>
                   </div>
                 </div>
                 <button v-if="imagePreview" type="button" class="remove-image-button" @click="removeImage">Remove Image</button>
@@ -102,40 +102,40 @@
           <div v-show="currentStep === 2">
             <!-- Description -->
             <div>
-              <label for="description" class="recipe-label">Description</label>
-              <textarea id="description" class="recipe-textarea" rows="2" placeholder="A simple, tasty skewer."
+              <label for="description" class="recipe-label select-none" draggable="false">Description</label>
+              <textarea id="description" class="recipe-textarea" rows="2" placeholder="Even those who don't like carrots tend to enjoy the mild sweetness of this cake."
                 v-model="description"
               ></textarea>
             </div>
             <!-- Rating -->
             <div>
-              <label class="recipe-label">Rating</label>
+              <label class="recipe-label select-none" draggable="false">Rating</label>
               <div class="hearts-container">
                 <img
                   v-for="n in 5"
                   :key="n"
                   :src="getHeartSrc(n)"
                   @click="setRating(n, $event)"
-                  class="heart compact-heart"
+                  class="heart compact-heart select-none"
                   alt="heart"
+                  draggable="false"
                 />
               </div>
             </div>
             <!-- Ingredients -->
             <div>
-              <label for="ingredients" class="recipe-label">Ingredients (one per line)</label>
-              <textarea id="ingredients" class="recipe-textarea" rows="3" placeholder="Hylian Shroom
-  Wooden Stick
-  Salt"
+              <label for="ingredients" class="recipe-label select-none" draggable="false">Ingredients (one per line)</label>
+              <textarea id="ingredients" class="recipe-textarea" rows="3" placeholder="Endura Carrots
+Goat Butter
+Cane Sugar"
                 v-model="ingredients"
               ></textarea>
             </div>
             <!-- Directions -->
             <div>
-              <label for="directions" class="recipe-label">Directions</label>
-              <textarea id="directions" class="recipe-textarea" rows="5" placeholder="1. Clean mushrooms thoroughly
-  2. Carefully thread them onto a skewer
-  3. Grill over an open flame until tender"
+              <label for="directions" class="recipe-label select-none" draggable="false">Directions</label>
+              <textarea id="directions" class="recipe-textarea" rows="5" placeholder="Mix carrots, butter, flour, and sugar together.
+Pour into a pan and bake until golden brown."
                 v-model="directions"
               ></textarea>
             </div>
