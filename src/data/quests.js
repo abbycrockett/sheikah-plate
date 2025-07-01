@@ -15,7 +15,7 @@ export const quests = [
     state: 'active' // 'active', 'hidden', 'complete'
   },
   {
-    id: 'quest-2',
+    id: 'quest-3',
     title: 'Destroy Ganon',
     requestor: 'King Rhoam',
     location: 'Great Plateau',
@@ -27,6 +27,20 @@ export const quests = [
       'Your ulimate task is to aid Princess Zelda in defeating Ganon before that can happen.'
     ],
     state: 'complete'
+  },
+  {
+    id: 'quest-2',
+    title: 'To see Kass off',
+    requestor: 'Kaneli',
+    location: 'Rito Village',
+    description: [
+        'Kaneli has invited you to Rito Village for a grand celebration. He mentions that <span class="al-highlight">Kass</span> has composed one final song, written just for you.',
+        '\n',
+        'Zelda encourages you to go. Kass is preparing to leave Hyrule behind, hoping to share its stories and gather new ones from distant lands. With the cold settling over the village, this may be your last chance to see him.',
+        '\n',
+        'Before you depart, you decide to prepare a <span class="al-highlight">few meals</span> to aid Kass on his journey: one for the morning, one to nourish him on the road, and one sweet reminder of home.'
+    ],
+    state: 'hidden'
   }
 ];
 

@@ -7,7 +7,7 @@
       <!-- Quest completion image -->
       <div class="relative z-10 flex items-center justify-center">
         <img 
-          src="/assets/ui-assets/add-new-recipe.png" 
+          :src="questImage" 
           alt="Quest Completion" 
           class="max-w-full max-h-full object-contain"
         />
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import { watch } from 'vue';
+import { watch, computed } from 'vue';
 
 export default {
   name: 'QuestCompletion',
@@ -45,10 +45,23 @@ export default {
     visible: {
       type: Boolean,
       default: false
+    },
+    questId: {
+      type: String,
+      default: 'quest-1'
     }
   },
   emits: ['close'],
   setup(props, { emit }) {
+    const questImage = computed(() => {
+      switch (props.questId) {
+        case 'quest-2':
+          return '/assets/ui-assets/to-see-kass-off.png';
+        case 'quest-1':
+        default:
+          return '/assets/ui-assets/add-new-recipe.png';
+      }
+    });
     let autoCloseTimer = null;
 
     const close = () => {
@@ -80,7 +93,8 @@ export default {
 
     return {
       close,
-      startAutoCloseTimer
+      startAutoCloseTimer,
+      questImage
     };
   }
 }
