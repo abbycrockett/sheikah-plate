@@ -16,25 +16,17 @@ export const quests = [
   },
   {
     id: 'quest-2',
-    title: 'Master the Sheikah Slate',
-    requestor: 'Purah',
-    location: 'Hateno Ancient Tech Lab',
+    title: 'Destroy Ganon',
+    requestor: 'King Rhoam',
+    location: 'Great Plateau',
     description: [
-      'The Sheikah Slate is a powerful tool that can store recipes, take pictures, and much more. Learn to use all its features to become a true master of ancient technology.',
-      'Visit the tech lab to receive training on advanced Sheikah Slate operations.'
+      'The ghost of King Rhoam told you that Hyrule is on the brink of annihilation.',
+      '\n',
+      'Princess Zelda is currently fighting to contain <span class="al-highlight">Calamity Ganon</span> inside Hyrule Castle, but her power cannot keep him at bay forever. Eventually Ganon will regain his full strength and destory the world.',
+      '\n',
+      'Your ulimate task is to aid Princess Zelda in defeating Ganon before that can happen.'
     ],
-    state: 'active'
-  },
-  {
-    id: 'quest-3',
-    title: 'Collect rare ingredients',
-    requestor: 'Impa',
-    location: 'Kakariko Village',
-    description: [
-      'The village elder Impa has requested rare ingredients for traditional Sheikah recipes. These ingredients can only be found in the most remote corners of Hyrule.',
-      'Search the mountains, forests, and ancient ruins for these precious materials.'
-    ],
-    state: 'hidden'
+    state: 'complete'
   }
 ];
 

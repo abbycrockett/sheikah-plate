@@ -9,16 +9,22 @@
     <!-- Main Quest Section (Left Side) -->
     <div class="main-quest-wrapper">
       <div class="main-quest-header">
-        <span class="main-quest-title">Main Quest</span>
+        <span class="main-quest-title">Main Quests</span>
       </div>
       <div class="main-quest-items">
         <QuestItem
-          v-for="quest in activeQuests"
+          v-for="quest in allQuests"
           :key="quest.id"
           :label="quest.title"
           :location="quest.location"
-          :showQuestMarker="quest.id === questWithMarker"
+          :showQuestMarker="quest.id === questWithMarker && quest.state === 'active'"
+          :isCompleted="quest.state === 'complete'"
+          :isSelected="quest.id === selectedQuest?.id"
+          :isHovered="quest.id === hoveredQuestId"
+          :anyQuestHovered="hoveredQuestId !== null"
           @click="onQuestClick(quest.id)"
+          @mouseenter="onQuestHover(quest.id)"
+          @mouseleave="onQuestLeave"
           style="min-width: 410px; max-width: 90%; margin-bottom: 0.5em;"
         />
       </div>
@@ -58,7 +64,7 @@ import MenuBar from '../components/MenuBar.vue';
 import QuestItem from '../components/QuestItem.vue';
 import { useRouter } from 'vue-router';
 import { onMounted, onUnmounted } from 'vue';
-import { getActiveQuests, getQuestById } from '../data/quests.js';
+import { getActiveQuests, getCompletedQuests, getQuestById } from '../data/quests.js';
 
 export default {
   name: 'AdventureLog',
@@ -68,49 +74,104 @@ export default {
     function goToRecipes() {
       router.push({ name: 'Home' });
     }
-    function handleKeydown(event) {
-      if (event.key === 'r' || event.key === 'R' || 
-        event.key === 'ArrowRight'
-      ) {
-        goToRecipes();
-      }
-    }
-    onMounted(() => {
-      document.addEventListener('keydown', handleKeydown);
-    });
-    onUnmounted(() => {
-      document.removeEventListener('keydown', handleKeydown);
-    });
     return { goToRecipes };
   },
   data() {
     return {
       activeQuests: [],
+      completedQuests: [],
       selectedQuest: null,
       displayedLines: [],
       currentLine: 0,
       currentChar: 0,
       typingInterval: null,
       questWithMarker: null, // Track which quest has the marker
+      hoveredQuestId: null, // Track which quest is being hovered
     };
+  },
+  computed: {
+    allQuests() {
+      // Return active quests first, then completed quests
+      return [...this.activeQuests, ...this.completedQuests];
+    },
   },
   mounted() {
     this.loadQuests();
+    document.addEventListener('keydown', this.handleKeydown);
+  },
+  beforeDestroy() {
+    if (this.typingInterval) {
+      clearInterval(this.typingInterval);
+    }
+    document.removeEventListener('keydown', this.handleKeydown);
   },
   methods: {
+    handleKeydown(event) {
+      if (event.key === 'r' || event.key === 'R' || 
+        event.key === 'ArrowRight'
+      ) {
+        this.goToRecipes();
+      } else if (event.key === 'ArrowDown') {
+        this.navigateToNextQuest();
+      } else if (event.key === 'ArrowUp') {
+        this.navigateToPreviousQuest();
+      }
+    },
     loadQuests() {
       this.activeQuests = getActiveQuests();
-      // Select the first quest by default if available
+      this.completedQuests = getCompletedQuests();
+      // Select the first active quest by default if available
       if (this.activeQuests.length > 0) {
         this.selectedQuest = this.activeQuests[0];
-        this.questWithMarker = this.activeQuests[0].id; // Set first quest as having marker
+        this.questWithMarker = this.activeQuests[0].id; // Set first active quest as having marker
+        this.startTyping();
+      } else if (this.completedQuests.length > 0) {
+        // If no active quests, select the first completed quest (but no marker)
+        this.selectedQuest = this.completedQuests[0];
         this.startTyping();
       }
     },
     onQuestClick(questId) {
       this.selectedQuest = getQuestById(questId);
-      this.questWithMarker = questId; // Move marker to clicked quest
+      // Only set marker if the quest is active
+      if (this.selectedQuest && this.selectedQuest.state === 'active') {
+        this.questWithMarker = questId;
+      }
       this.startTyping();
+    },
+    navigateToNextQuest() {
+      if (this.allQuests.length === 0) return;
+      
+      const currentIndex = this.allQuests.findIndex(quest => quest.id === this.selectedQuest?.id);
+      const nextIndex = (currentIndex + 1) % this.allQuests.length;
+      const nextQuest = this.allQuests[nextIndex];
+      
+      this.selectedQuest = nextQuest;
+      // Only set marker if the quest is active
+      if (nextQuest.state === 'active') {
+        this.questWithMarker = nextQuest.id;
+      }
+      this.startTyping();
+    },
+    navigateToPreviousQuest() {
+      if (this.allQuests.length === 0) return;
+      
+      const currentIndex = this.allQuests.findIndex(quest => quest.id === this.selectedQuest?.id);
+      const prevIndex = currentIndex === 0 ? this.allQuests.length - 1 : currentIndex - 1;
+      const prevQuest = this.allQuests[prevIndex];
+      
+      this.selectedQuest = prevQuest;
+      // Only set marker if the quest is active
+      if (prevQuest.state === 'active') {
+        this.questWithMarker = prevQuest.id;
+      }
+      this.startTyping();
+    },
+    onQuestHover(questId) {
+      this.hoveredQuestId = questId;
+    },
+    onQuestLeave() {
+      this.hoveredQuestId = null;
     },
     startTyping() {
       // Clear any existing typing interval
@@ -119,8 +180,6 @@ export default {
       }
       
       if (!this.selectedQuest) return;
-      
-      // Use description array directly - each item is a paragraph
       const descriptionLines = this.selectedQuest.description;
       this.displayedLines = new Array(descriptionLines.length).fill('');
       this.currentLine = 0;
@@ -152,11 +211,6 @@ export default {
       }
     },
     },
-  beforeDestroy() {
-    if (this.typingInterval) {
-      clearInterval(this.typingInterval);
-    }
-  },
 }
 </script>
 

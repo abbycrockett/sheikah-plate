@@ -1,14 +1,14 @@
 <template>
   <button
     class="quest-item-outer"
-    :class="{ 'quest-item-disabled': disabled }"
+    :class="{ 
+      'quest-item-disabled': disabled,
+      'quest-item-completed': isCompleted
+    }"
     :style="style"
     :disabled="disabled"
     @click="handleClick"
-    @focus="handleFocus"
-    @mouseenter="handleFocus"
-    @blur="handleBlur"
-    @mouseleave="handleBlur"
+
   >
     <span class="quest-item-icon-wrapper">
       <img :src="iconToUse" alt="Quest Icon" class="quest-item-icon" draggable="false" />
@@ -17,7 +17,7 @@
       <span class="quest-item-label">{{ label }}</span>
       <span v-if="location" class="quest-item-location">{{ location }}</span>
     </span>
-    <span class="quest-item-svg-corner">
+    <span v-if="!isCompleted" class="quest-item-svg-corner">
       <svg viewBox="0 0 28 78" fill="none" xmlns="http://www.w3.org/2000/svg" width="100%" height="100%">
         <path opacity="0.6" fill-rule="evenodd" clip-rule="evenodd" d="M28 0H0V78H28V0ZM14 43C16.2091 43 18 41.2091 18 39C18 36.7909 16.2091 35 14 35C11.7909 35 10 36.7909 10 39C10 41.2091 11.7909 43 14 43Z" fill="#66645D"/>
       </svg>
@@ -25,11 +25,11 @@
     </span>
     <div
       class="quest-item-inner"
-      :class="{ 'quest-item-focused': isFocused }"
+      :class="{ 'quest-item-focused': shouldShowFocus }"
       :style="{ borderColor: borderColor }"
     >
       <transition name="quest-traingle-fade">
-        <div v-if="isFocused" class="quest-item-traingles">
+        <div v-if="shouldShowFocus" class="quest-item-traingles">
           <img src="/assets/ui-assets/quest-triangle-tl.png" class="quest-traingle-img quest-traingle-tl" alt="traingle" draggable="false" />
           <img src="/assets/ui-assets/quest-triangle-tr.png" class="quest-traingle-img quest-traingle-tr" alt="traingle" draggable="false" />
           <img src="/assets/ui-assets/quest-triangle-bl.png" class="quest-traingle-img quest-traingle-bl" alt="traingle" draggable="false" />
@@ -50,10 +50,14 @@ export default {
     style: { type: [Object, String], default: null },
     icon: { type: String, default: '' },
     showQuestMarker: { type: Boolean, default: false },
+    isCompleted: { type: Boolean, default: false },
+    isSelected: { type: Boolean, default: false },
+    isHovered: { type: Boolean, default: false },
+    anyQuestHovered: { type: Boolean, default: false },
   },
   data() {
     return {
-      isFocused: false,
+      // No local state needed - using global hover state
     };
   },
   computed: {
@@ -61,7 +65,14 @@ export default {
       return this.icon || '/assets/ui-assets/quest.png';
     },
     borderColor() {
-      return this.isFocused ? '#FDFEE7' : '#3A3A3A'; // Glow or normal
+      return this.shouldShowFocus ? '#FDFEE7' : '#3A3A3A'; // Glow or normal
+    },
+    shouldShowFocus() {
+      // If any quest is being hovered, only show focus on the hovered quest
+      if (this.anyQuestHovered && this.isHovered) return true;
+      // If no quest is being hovered, show focus on the selected quest
+      if (!this.anyQuestHovered && this.isSelected) return true;
+      return false;
     },
     traingleStyle() {
       return {
@@ -70,12 +81,6 @@ export default {
     },
   },
   methods: {
-    handleFocus() {
-      this.isFocused = true;
-    },
-    handleBlur() {
-      this.isFocused = false;
-    },
     handleClick(e) {
       if (!this.disabled) {
         this.$emit('click', e);
@@ -107,6 +112,23 @@ export default {
 .quest-item-disabled {
   filter: brightness(0.5);
   cursor: not-allowed;
+}
+.quest-item-completed {
+  opacity: 0.7;
+  filter: grayscale(0.3);
+  transition: opacity 0.2s, filter 0.2s;
+}
+.quest-item-completed:hover {
+  opacity: 0.7;
+  filter: grayscale(0.3);
+}
+.quest-item-completed:hover .quest-item-inner {
+  opacity: 1;
+  filter: none;
+}
+.quest-item-completed:hover .quest-item-traingles {
+  opacity: 1;
+  filter: none;
 }
 .quest-item-icon-wrapper {
   position: absolute;
