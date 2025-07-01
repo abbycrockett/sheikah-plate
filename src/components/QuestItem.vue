@@ -62,7 +62,9 @@ export default {
   },
   computed: {
     iconToUse() {
-      return this.icon || '/assets/ui-assets/quest.png';
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const basePath = isLocal ? '' : '/sheikah-plate';
+      return this.icon || `${basePath}/assets/ui-assets/quest.png`;
     },
     borderColor() {
       return this.shouldShowFocus ? '#FDFEE7' : '#3A3A3A'; // Glow or normal
