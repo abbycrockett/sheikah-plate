@@ -107,6 +107,17 @@ export default {
   },
   methods: {
     handleKeydown(event) {
+      // If the event target is an input, textarea, or contenteditable element, 
+      // don't handle navigation keys to allow normal typing
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') {
+        return;
+      }
+      
+      // Only handle navigation if we're actually on the adventure-log route
+      if (this.$route.name !== 'AdventureLog') {
+        return;
+      }
+      
       if (event.key === 'r' || event.key === 'R' || 
         event.key === 'ArrowRight'
       ) {

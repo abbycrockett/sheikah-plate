@@ -237,6 +237,14 @@ export default {
       }
     }
     function handleKeydown(e) {
+      // If the event target is an input, textarea, or contenteditable element, 
+      // don't handle navigation keys to allow normal typing
+      if (e.target.tagName === 'INPUT' || e.target.tagName === 'TEXTAREA' || e.target.contentEditable === 'true') {
+        // Prevent the event from bubbling up to parent components
+        e.stopPropagation();
+        return;
+      }
+      
       if (e.key === 'ArrowLeft') {
         if (currentStep.value > 1) {
           currentStep.value--;

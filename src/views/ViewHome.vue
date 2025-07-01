@@ -186,6 +186,11 @@
       @close="showBackupModal = false"
       @recipes-imported="handleRecipesImported"
     />
+
+    <QuestCompletion
+      :visible="showQuestCompletion"
+      @close="showQuestCompletion = false"
+    />
   </div>
 </template>
 
@@ -199,10 +204,12 @@ import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js';
 import EditRecipeForm from '../components/EditRecipeForm.vue';
 import { useRouter } from 'vue-router';
 import BackupModal from '../components/BackupModal.vue';
+import QuestCompletion from '../components/QuestCompletion.vue';
+import { updateQuestState, getQuestById } from '../data/quests.js';
 
 export default {
   name: 'ViewHome',
-  components: { MenuBar, FullRecipeCard, RecipeCard, BackupModal },
+  components: { MenuBar, FullRecipeCard, RecipeCard, BackupModal, QuestCompletion },
   setup() {
     const searchQuery = ref('');
     const selectedFilters = ref([]);
@@ -218,6 +225,13 @@ export default {
     const showBackupModal = ref(false);
     const showEditForm = ref(false);
     const editingRecipe = ref(null);
+    const showQuestCompletion = ref(false);
+    
+    // Check if quest completion has been shown before
+    const hasShownQuestCompletion = ref(false);
+    if (typeof window !== 'undefined') {
+      hasShownQuestCompletion.value = localStorage.getItem('quest-1-completion-shown') === 'true';
+    }
     
     const filters = [
       {
@@ -237,7 +251,31 @@ export default {
     // Remove hardcoded recipes, use localStorage
     const recipes = ref([]);
     async function refreshRecipes() {
+      const previousCount = recipes.value.length;
       recipes.value = await loadRecipes();
+      
+      // Check if recipe count just became 1 and complete quest-1
+      if (previousCount === 0 && recipes.value.length === 1) {
+        updateQuestState('quest-1', 'complete');
+        // Show quest completion overlay only if this is the first time completing the quest
+        if (!hasShownQuestCompletion.value) {
+          showQuestCompletion.value = true;
+          hasShownQuestCompletion.value = true;
+          // Mark as shown in localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('quest-1-completion-shown', 'true');
+          }
+        }
+      }
+      // Check if recipe count went back to 0 and reset quest-1 to active
+      else if (previousCount === 1 && recipes.value.length === 0) {
+        updateQuestState('quest-1', 'active');
+        // Reset the quest completion shown flag when quest becomes active again
+        hasShownQuestCompletion.value = false;
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('quest-1-completion-shown');
+        }
+      }
     }
     refreshRecipes();
 
@@ -364,6 +402,17 @@ export default {
     }
 
     function handleKeyPress(event) {
+      // If the event target is an input, textarea, or contenteditable element, 
+      // don't handle navigation keys to allow normal typing
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') {
+        return;
+      }
+      
+      // Only handle navigation if we're actually on the home route
+      if (router.currentRoute.value.name !== 'Home') {
+        return;
+      }
+      
       if (showFullRecipe.value) {
         handleFullRecipeClose();
         return;
@@ -408,6 +457,10 @@ export default {
 
     function handleRecipesImported() {
       refreshRecipes();
+      // Check if imported recipes complete quest-1
+      if (recipes.value.length >= 1) {
+        updateQuestState('quest-1', 'complete');
+      }
     }
 
     onMounted(() => {
@@ -453,7 +506,8 @@ export default {
       showBackupModal,
       handleRecipesImported,
       showEditForm,
-      editingRecipe
+      editingRecipe,
+      showQuestCompletion
     };
   }
 }

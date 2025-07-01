@@ -1,7 +1,7 @@
 // Utility for saving and loading recipes from IndexedDB
 const DB_NAME = 'sheikah_plate_db';
 const STORE_NAME = 'recipes';
-const DB_VERSION = 1;
+const DB_VERSION = 2;
 
 function openDB() {
   return new Promise((resolve, reject) => {
