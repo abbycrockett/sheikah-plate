@@ -34,25 +34,32 @@
                   <span class="text-white text-2xl font-bold tracking-wider" style="font-family: var(--main-font);">{{ recipe.name }}</span>
               </div>
 
-              <!-- Directions -->
-              <div v-if="recipe.directions" class="absolute top-64 -left-12 text-left max-w-xs w-full">
-                <p class="text-lg leading-snug" style="color: #453906;">
-                  {{ recipe.directions }}
-                </p>
+              <!-- Ingredients Block -->
+              <div
+                v-if="recipe.ingredients && recipe.ingredients.length"
+                :class="[
+                  'absolute top-64 -left-10 text-left max-w-lg w-95 pr-1',
+                  ingredientsScrollable ? 'max-h-44 overflow-y-auto ingredients-scrollbar min-w-[16rem]' : ''
+                ]"
+                style=""
+              >
+                <ul>
+                  <li v-for="(ingredient, idx) in recipe.ingredients" :key="ingredient"
+                      :class="[ 'text-lg cursor-pointer select-none', { 'line-through text-gray-400': crossed[idx] } ]"
+                      style="color: #453906;"
+                      @click.stop="toggleCross(idx)">
+                    {{ ingredient }}
+                  </li>
+                </ul>
               </div>
             </div>
 
-            <!-- Ingredients -->
-            <div v-if="recipe.ingredients && recipe.ingredients.length" class="absolute left-1/2 top-16 -ml-8">
-              <h3 class="text-3xl font-bold mb-4" style="color: #453906;">Ingredients</h3>
-              <ul>
-                <li v-for="(ingredient, idx) in recipe.ingredients" :key="ingredient"
-                    :class="[ 'text-lg cursor-pointer select-none', { 'line-through text-gray-400': crossed[idx] } ]"
-                    style="color: #453906;"
-                    @click.stop="toggleCross(idx)">
-                  {{ ingredient }}
-                </li>
-              </ul>
+            <!-- Directions Block -->
+            <div v-if="recipe.directions" class="absolute left-1/2 top-16 -ml-8 max-w-md w-96">
+              <h3 class="text-3xl font-bold mb-4" style="color: #453906;">Directions</h3>
+              <p class="text-lg leading-snug" style="color: #453906;">
+                {{ recipe.directions }}
+              </p>
             </div>
           </div>
           
@@ -62,9 +69,9 @@
                  class="absolute"
                  :style="{ left: clickX + 'px', top: clickY + 'px', transform: 'translate(-50%, -50%)' }">
               <div class="relative w-32 h-24">
-                <div class="absolute top-0 w-32 h-8 edit-option" @click.stop="$emit('edit', recipe)"></div>
-                <div class="absolute top-8 w-32 h-8 delete-option" @click="showDeleteModal"></div>
-                <div class="absolute top-16 w-32 h-8 exit-option" @click="closeCard"></div>
+                <div class="absolute top-0 w-32 h-8 option-edit" @click.stop="$emit('edit', recipe)"></div>
+                <div class="absolute top-8 w-32 h-8 option-delete" @click="showDeleteModal"></div>
+                <div class="absolute top-16 w-32 h-8 option-exit" @click="closeCard"></div>
               </div>
             </div>
           </transition>
@@ -151,6 +158,9 @@ export default {
       // If it's not a valid type, return empty string
       console.warn('Invalid picture type for recipe:', this.recipe.name, typeof this.recipe.picture);
       return '';
+    },
+    ingredientsScrollable() {
+      return this.recipe && this.recipe.ingredients && this.recipe.ingredients.length > 6;
     }
   },
   mounted() {
@@ -293,7 +303,7 @@ export default {
   text-decoration: line-through;
 }
 
-.edit-option {
+.option-edit {
   background-image: url('/assets/ui-assets/edit.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -301,11 +311,11 @@ export default {
   cursor: pointer;
 }
 
-.edit-option:hover {
+.option-edit:hover {
   background-image: url('/assets/ui-assets/edit-hover.png') !important;
 }
 
-.delete-option {
+.option-delete {
   background-image: url('/assets/ui-assets/delete.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -313,11 +323,11 @@ export default {
   cursor: pointer;
 }
 
-.delete-option:hover {
+.option-delete:hover {
   background-image: url('/assets/ui-assets/delete-hover.png') !important;
 }
 
-.exit-option {
+.option-exit {
   background-image: url('/assets/ui-assets/exit.png');
   background-size: contain;
   background-repeat: no-repeat;
@@ -325,7 +335,29 @@ export default {
   cursor: pointer;
 }
 
-.exit-option:hover {
+.option-exit:hover {
   background-image: url('/assets/ui-assets/exit-hover.png') !important;
+}
+
+/* Custom scrollbar for ingredients */
+.ingredients-scrollbar::-webkit-scrollbar {
+  width: 7px;
+  background: transparent;
+}
+.ingredients-scrollbar::-webkit-scrollbar-thumb {
+  background: transparent;
+  transition: background 0.2s;
+}
+.ingredients-scrollbar:hover::-webkit-scrollbar-thumb,
+.ingredients-scrollbar:active::-webkit-scrollbar-thumb {
+  background: rgba(85, 69, 2, 0.25); /* muted brown, semi-transparent */
+}
+.ingredients-scrollbar {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.ingredients-scrollbar:hover,
+.ingredients-scrollbar:active {
+  scrollbar-color: rgba(85,69,2,0.25) transparent;
 }
 </style> 

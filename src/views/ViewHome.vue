@@ -102,7 +102,7 @@
           </div>
 
           <!-- Recipe Grid -->
-          <div class="grid grid-cols-5 gap-2 ml-20 max-w-md">
+          <div class="recipe-grid-scroll ml-20 max-w-md">
             <div 
               v-for="(recipe, index) in filteredRecipes" 
               :key="recipe.id"
@@ -186,6 +186,12 @@
       @close="showBackupModal = false"
       @recipes-imported="handleRecipesImported"
     />
+
+    <QuestCompletion
+      :visible="showQuestCompletion"
+      :questId="completedQuestId"
+      @close="showQuestCompletion = false"
+    />
   </div>
 </template>
 
@@ -199,10 +205,12 @@ import { loadRecipes, deleteRecipe } from '../scripts/recipesStorage.js';
 import EditRecipeForm from '../components/EditRecipeForm.vue';
 import { useRouter } from 'vue-router';
 import BackupModal from '../components/BackupModal.vue';
+import QuestCompletion from '../components/QuestCompletion.vue';
+import { updateQuestState, getQuestById } from '../data/quests.js';
 
 export default {
   name: 'ViewHome',
-  components: { MenuBar, FullRecipeCard, RecipeCard, BackupModal },
+  components: { MenuBar, FullRecipeCard, RecipeCard, BackupModal, QuestCompletion },
   setup() {
     const searchQuery = ref('');
     const selectedFilters = ref([]);
@@ -218,6 +226,16 @@ export default {
     const showBackupModal = ref(false);
     const showEditForm = ref(false);
     const editingRecipe = ref(null);
+    const showQuestCompletion = ref(false);
+    const completedQuestId = ref('quest-1');
+    
+    // Check if quest completion has been shown before
+    const hasShownQuestCompletion = ref(false);
+    const hasShownQuest2Completion = ref(false);
+    if (typeof window !== 'undefined') {
+      hasShownQuestCompletion.value = localStorage.getItem('quest-1-completion-shown') === 'true';
+      hasShownQuest2Completion.value = localStorage.getItem('quest-2-completion-shown') === 'true';
+    }
     
     const filters = [
       {
@@ -237,7 +255,107 @@ export default {
     // Remove hardcoded recipes, use localStorage
     const recipes = ref([]);
     async function refreshRecipes() {
+      const previousCount = recipes.value.length;
       recipes.value = await loadRecipes();
+      
+      // Check if we should prevent quest completion popup (after import)
+      const preventQuestPopup = typeof window !== 'undefined' && localStorage.getItem('prevent-quest-popup') === 'true';
+      
+      // Check if recipe count just became 1 and complete quest-1
+      if (previousCount === 0 && recipes.value.length === 1) {
+        updateQuestState('quest-1', 'complete');
+        // Activate quest-2 when quest-1 is completed
+        updateQuestState('quest-2', 'active');
+        // Show quest completion overlay only if this is the first time completing the quest
+        // AND we're not preventing popup after import
+        if (!hasShownQuestCompletion.value && !preventQuestPopup) {
+          completedQuestId.value = 'quest-1';
+          showQuestCompletion.value = true;
+          hasShownQuestCompletion.value = true;
+          // Mark as shown in localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('quest-1-completion-shown', 'true');
+          }
+        }
+      }
+      // Check if quest-1 should be completed (has at least 1 recipe and is currently active)
+      else if (recipes.value.length >= 1 && getQuestById('quest-1')?.state === 'active') {
+        updateQuestState('quest-1', 'complete');
+        // Activate quest-2 when quest-1 is completed
+        updateQuestState('quest-2', 'active');
+        // Show quest completion overlay only if this is the first time completing the quest
+        // AND we're not preventing popup after import
+        if (!hasShownQuestCompletion.value && !preventQuestPopup) {
+          completedQuestId.value = 'quest-1';
+          showQuestCompletion.value = true;
+          hasShownQuestCompletion.value = true;
+          // Mark as shown in localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('quest-1-completion-shown', 'true');
+          }
+        }
+      }
+      // Check if recipe count went back to 0 and reset quest-1 to active
+      else if (recipes.value.length === 0) {
+        updateQuestState('quest-1', 'active');
+        // Hide quest-2 when quest-1 becomes active again
+        updateQuestState('quest-2', 'hidden');
+        // Reset the quest completion shown flag when quest becomes active again
+        hasShownQuestCompletion.value = false;
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('quest-1-completion-shown');
+        }
+      }
+      
+      // Check if quest-2 should be completed (has at least one recipe of each category)
+      const categories = ['Breakfast', 'Entrée', 'Dessert'];
+      const hasAllCategories = categories.every(category => 
+        recipes.value.some(recipe => recipe.category === category)
+      );
+      
+      // Get current quest states
+      const currentQuest2State = getQuestById('quest-2')?.state;
+      const currentQuest1State = getQuestById('quest-1')?.state;
+      
+      // Debug logging
+      console.log('Quest-2 Debug:', {
+        hasAllCategories,
+        currentQuest2State,
+        quest1State: currentQuest1State,
+        recipes: recipes.value.map(r => ({ name: r.name, category: r.category })),
+        hasShownQuest2Completion: hasShownQuest2Completion.value
+      });
+      
+      // If quest-1 is complete but quest-2 is hidden, activate quest-2
+      if (currentQuest1State === 'complete' && currentQuest2State === 'hidden') {
+        updateQuestState('quest-2', 'active');
+        console.log('Quest-2 activated!');
+      }
+      
+      // Get updated quest-2 state after potential activation
+      const updatedQuest2State = getQuestById('quest-2')?.state;
+      
+      console.log('Updated Quest-2 state:', updatedQuest2State);
+      
+      if (hasAllCategories && updatedQuest2State === 'active') {
+        updateQuestState('quest-2', 'complete');
+        // Show quest-2 completion overlay if this is the first time completing it
+        // AND we're not preventing popup after import
+        if (!hasShownQuest2Completion.value && !preventQuestPopup) {
+          completedQuestId.value = 'quest-2';
+          showQuestCompletion.value = true;
+          hasShownQuest2Completion.value = true;
+          // Mark as shown in localStorage
+          if (typeof window !== 'undefined') {
+            localStorage.setItem('quest-2-completion-shown', 'true');
+          }
+        }
+      }
+      
+      // Clear the prevent popup flag after processing quests
+      if (preventQuestPopup && typeof window !== 'undefined') {
+        localStorage.removeItem('prevent-quest-popup');
+      }
     }
     refreshRecipes();
 
@@ -364,6 +482,17 @@ export default {
     }
 
     function handleKeyPress(event) {
+      // If the event target is an input, textarea, or contenteditable element, 
+      // don't handle navigation keys to allow normal typing
+      if (event.target.tagName === 'INPUT' || event.target.tagName === 'TEXTAREA' || event.target.contentEditable === 'true') {
+        return;
+      }
+      
+      // Only handle navigation if we're actually on the home route
+      if (router.currentRoute.value.name !== 'Home') {
+        return;
+      }
+      
       if (showFullRecipe.value) {
         handleFullRecipeClose();
         return;
@@ -407,7 +536,11 @@ export default {
     }
 
     function handleRecipesImported() {
-      refreshRecipes();
+      // Set a flag to prevent quest completion popup after page refresh
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('prevent-quest-popup', 'true');
+        window.location.reload();
+      }
     }
 
     onMounted(() => {
@@ -453,7 +586,9 @@ export default {
       showBackupModal,
       handleRecipesImported,
       showEditForm,
-      editingRecipe
+      editingRecipe,
+      showQuestCompletion,
+      completedQuestId
     };
   }
 }
@@ -529,5 +664,33 @@ export default {
   margin-left: -120px;
   margin-top: -60px;
   max-width: 260px;
+}
+
+.recipe-grid-scroll {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0.5rem;
+  max-height: calc(80px * 5 + 16px); /* 3 rows + gap */
+  overflow-y: auto;
+  padding-right: 6px; /* space for scrollbar */
+}
+
+.recipe-grid-scroll::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+.recipe-grid-scroll::-webkit-scrollbar-thumb {
+  background: rgba(5, 134, 150, 0.25);
+  border-radius: 8px;
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.recipe-grid-scroll::-webkit-scrollbar-thumb:hover {
+  background: rgba(5, 134, 150, 0.45);
+}
+
+/* Firefox */
+.recipe-grid-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(5,134,150,0.25) rgba(255,255,255,0.05);
 }
 </style> 

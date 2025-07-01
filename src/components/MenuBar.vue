@@ -1,23 +1,23 @@
 <template>
   <div class="menu-bar w-full">
     <div class="hearts-container">
-      <img src="/assets/ui-assets/bar-hearts.png" alt="Hearts" class="hearts-icon" />
+      <img src="/assets/ui-assets/bar-hearts.png" alt="Hearts" class="hearts-icon" style="user-select: none;" draggable="false" />
     </div>
     <div class="menu-content">
       <div class="title-section">
         <div class="title-row">
-          <img v-if="currentView === 'recipes'" src="/assets/ui-assets/l-button.png" alt="L Button" class="l-button" @click="$emit('switch-adventure-log')" style="cursor:pointer;" />
-          <h1 class="title">{{ titleText }}</h1>
-          <img v-if="currentView === 'adventure-log'" src="/assets/ui-assets/r-button.png" alt="R Button" class="r-button" @click="$emit('switch-recipes')" style="cursor:pointer;" />
+          <img v-if="currentView === 'recipes'" src="/assets/ui-assets/l-button.png" alt="L Button" class="l-button" @click="$emit('switch-adventure-log')" style="cursor:pointer;" draggable="false" />
+          <h1 class="title" style="user-select: none;">{{ titleText }}</h1>
+          <img v-if="currentView === 'adventure-log'" src="/assets/ui-assets/r-button.png" alt="R Button" class="r-button" @click="$emit('switch-recipes')" style="cursor:pointer;" draggable="false" />
         </div>
-        <div class="circles-container">
-          <div class="circle" :class="leftCircleClass"></div>
-          <div class="circle" :class="rightCircleClass"></div>
+        <div class="circles-container" style="user-select: none;">
+          <div class="circle" :class="leftCircleClass" style="user-select: none;" draggable="false"></div>
+          <div class="circle" :class="rightCircleClass" style="user-select: none;" draggable="false"></div>
         </div>
       </div>
     </div>
     <div v-if="showRupees" class="rupee-container">
-      <img src="/assets/ui-assets/rupee.png" alt="Rupee" class="rupee-icon" />
+      <img src="/assets/ui-assets/rupee.png" alt="Rupee" class="rupee-icon" style="user-select: none;" draggable="false" />
     </div>
   </div>
 </template>
